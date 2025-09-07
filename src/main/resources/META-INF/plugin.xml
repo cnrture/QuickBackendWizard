@@ -5,6 +5,7 @@
     <vendor email="cnrture@gmail.com" url="https://candroid.dev">Caner Ture</vendor>
 
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow
@@ -15,5 +16,8 @@
 
         <notificationGroup id="QuickBackendWizard"
                            displayType="BALLOON"/>
+
+        <projectTemplatesFactory
+                implementation="com.github.cnrture.quickbackendwizard.generators.QBWProjectTemplatesFactory"/>
     </extensions>
 </idea-plugin>
