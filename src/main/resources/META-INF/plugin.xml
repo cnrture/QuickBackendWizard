@@ -2,14 +2,18 @@
 <idea-plugin>
     <id>com.github.cnrture.quickbackendwizard</id>
     <name>QuickBackendWizard</name>
-    <vendor>cnrture</vendor>
+    <vendor email="cnrture@gmail.com" url="https://candroid.dev">Caner Ture</vendor>
 
     <depends>com.intellij.modules.platform</depends>
 
-    <resource-bundle>messages.MyBundle</resource-bundle>
-
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.cnrture.quickbackendwizard.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
-        <postStartupActivity implementation="com.github.cnrture.quickbackendwizard.startup.MyProjectActivity" />
+        <toolWindow
+                factoryClass="com.github.cnrture.quickbackendwizard.toolWindow.QuickBackendWizardToolWindowFactory"
+                id="QuickBackendWizard"
+                anchor="right"
+                icon="/icons/pluginIcon.svg"/>
+
+        <notificationGroup id="QuickBackendWizard"
+                           displayType="BALLOON"/>
     </extensions>
 </idea-plugin>
