@@ -1,6 +1,7 @@
 package com.github.cnrture.quickbackendwizard.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -32,7 +33,6 @@ fun QBWCheckbox(
     modifier: Modifier = Modifier,
     checked: Boolean,
     label: String? = null,
-    isBackgroundEnable: Boolean = false,
     color: Color = QBWTheme.colors.red,
     onCheckedChange: (Boolean) -> Unit = {},
 ) {
@@ -44,13 +44,17 @@ fun QBWCheckbox(
                 onClick = { onCheckedChange(checked.not()) }
             )
             .then(
-                if (isBackgroundEnable && checked) {
+                if (checked) {
                     Modifier.background(
                         color = color,
                         shape = RoundedCornerShape(12.dp)
                     )
                 } else {
-                    Modifier
+                    Modifier.border(
+                        width = 1.dp,
+                        color = color,
+                        shape = RoundedCornerShape(12.dp)
+                    )
                 }
             )
             .clip(RoundedCornerShape(12.dp))
@@ -66,13 +70,13 @@ fun QBWCheckbox(
                 onCheckedChange = onCheckedChange,
                 interactionSource = NoRippleInteractionSource(),
                 colors = CheckboxDefaults.colors(
-                    checkedColor = if (isBackgroundEnable && checked) {
+                    checkedColor = if (checked) {
                         QBWTheme.colors.white
                     } else {
                         color
                     },
                     uncheckedColor = QBWTheme.colors.white,
-                    checkmarkColor = if (isBackgroundEnable && checked) {
+                    checkmarkColor = if (checked) {
                         color
                     } else {
                         QBWTheme.colors.white

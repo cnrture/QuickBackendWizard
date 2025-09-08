@@ -19,7 +19,7 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
     var includeSpringWeb: Boolean = false
     var includeSpringDataJpa: Boolean = false
     var includeH2Database: Boolean = false
-    var includeSprinSecurity: Boolean = false
+    var includeSpringSecurity: Boolean = false
     var includeValidation: Boolean = false
 
     override fun getBuilderId(): String = "qbw.spring.boot"
@@ -97,9 +97,9 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
             dependencies.add("implementation(\"org.springframework.boot:spring-boot-starter-data-jpa\")")
         }
         if (includeH2Database) {
-            dependencies.add("runtimeOnly(\"com.h2database:h2\")")
+            dependencies.add("implementation(\"com.h2database:h2\")")
         }
-        if (includeSprinSecurity) {
+        if (includeSpringSecurity) {
             dependencies.add("implementation(\"org.springframework.boot:spring-boot-starter-security\")")
         }
         if (includeValidation) {
@@ -108,6 +108,8 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
 
         dependencies.add("testImplementation(\"org.springframework.boot:spring-boot-starter-test\")")
         dependencies.add("testImplementation(\"org.jetbrains.kotlin:kotlin-test-junit5\")")
+        dependencies.add("testImplementation(\"io.mockk:mockk:1.13.8\")")
+        dependencies.add("testImplementation(\"io.mockk:mockk-jvm:1.13.8\")")
         dependencies.add("testRuntimeOnly(\"org.junit.platform:junit-platform-launcher\")")
 
         val dependenciesBlock = dependencies.joinToString("\n    ")
