@@ -32,7 +32,7 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
 
     override fun getPresentableName(): String = "QBW Spring Boot"
 
-    override fun getDescription(): String = "Spring Boot project with Quick Backend Wizard configuration"
+    override fun getDescription(): String = "Spring boot project with Quick Backend Wizard configuration"
 
     override fun setupRootModel(modifiableRootModel: ModifiableRootModel) {
         super.setupRootModel(modifiableRootModel)
