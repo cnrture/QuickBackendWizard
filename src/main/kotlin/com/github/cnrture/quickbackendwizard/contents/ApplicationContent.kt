@@ -16,3 +16,9 @@ fun main(args: Array<String>) {
     runApplication<$className>(*args)
 }
 """.trimIndent()
+
+fun getApplicationPropertiesContent(
+    projectName: String,
+) = """
+spring.application.name=$projectName
+""".trimIndent()

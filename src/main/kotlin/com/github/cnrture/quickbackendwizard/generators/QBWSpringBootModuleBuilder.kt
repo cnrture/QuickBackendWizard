@@ -4,6 +4,12 @@ import com.github.cnrture.quickbackendwizard.contents.*
 import com.intellij.ide.util.projectWizard.JavaModuleBuilder
 import com.intellij.ide.util.projectWizard.ModuleWizardStep
 import com.intellij.ide.util.projectWizard.WizardContext
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.externalSystem.importing.ImportSpecBuilder
+import com.intellij.openapi.externalSystem.model.ProjectSystemId
+import com.intellij.openapi.externalSystem.service.execution.ProgressExecutionMode
+import com.intellij.openapi.externalSystem.util.ExternalSystemUtil
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModifiableRootModel
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider
 import com.intellij.openapi.vfs.VirtualFile
@@ -30,7 +36,6 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
 
     override fun setupRootModel(modifiableRootModel: ModifiableRootModel) {
         super.setupRootModel(modifiableRootModel)
-        println("Setting up project structure for $projectName")
         createProjectStructure(modifiableRootModel)
     }
 
@@ -40,17 +45,37 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
 
         try {
             createDirectoryStructure(root)
-
             createProjectFiles(root)
-            println("Project structure created successfully.")
+
+            ApplicationManager.getApplication().invokeLater {
+                ApplicationManager.getApplication().executeOnPooledThread {
+                    try {
+                        Thread.sleep(2000)
+                        syncGradleProject(modifiableRootModel.project, root)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
         } catch (e: IOException) {
-            println("Error creating project structure: ${e.message}")
+            e.printStackTrace()
+        }
+    }
+
+    private fun syncGradleProject(project: Project, projectRoot: VirtualFile) {
+        try {
+            val gradleSystemId = ProjectSystemId("GRADLE")
+            ExternalSystemUtil.refreshProject(
+                projectRoot.path,
+                ImportSpecBuilder(project, gradleSystemId)
+                    .use(ProgressExecutionMode.IN_BACKGROUND_ASYNC)
+            )
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
     private fun createDirectoryStructure(root: VirtualFile) {
-        println("Creating directory structure...")
         val gradleDir = root.findChild("gradle") ?: root.createChildDirectory(this, "gradle")
         gradleDir.createChildDirectory(this, "wrapper")
 
@@ -59,7 +84,7 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         val testDir = srcDir.findChild("test") ?: srcDir.createChildDirectory(this, "test")
 
         val kotlinMainDir = mainDir.createChildDirectory(this, "kotlin")
-        val resourcesMainDir = mainDir.createChildDirectory(this, "resources")
+        mainDir.createChildDirectory(this, "resources")
 
         val kotlinTestDir = testDir.createChildDirectory(this, "kotlin")
 
@@ -82,6 +107,7 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         createGradleWrapper(root)
         createMainApplicationFile(root)
         createGitIgnore(root)
+        createApplicationProperties(root)
     }
 
     private fun createBuildGradle(root: VirtualFile) {
@@ -165,6 +191,18 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
     private fun createGitIgnore(root: VirtualFile) {
         val content = getGitIgnoreContent()
         createFile(root, ".gitignore", content)
+    }
+
+    private fun createApplicationProperties(root: VirtualFile) {
+        val resourcesDir = root.findChild("src")
+            ?.findChild("main")
+            ?.findChild("resources")
+
+        val content = getApplicationPropertiesContent(projectName)
+
+        resourcesDir?.let { resDir ->
+            createFile(resDir, "application.properties", content)
+        }
     }
 
     private fun createFile(parent: VirtualFile, fileName: String, content: String): VirtualFile {
