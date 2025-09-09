@@ -32,7 +32,7 @@ class QBWSpringBootConfigurationStep(private val moduleBuilder: QBWSpringBootMod
         ComposePanel().apply {
             setContent {
                 QBWTheme {
-                    val pages = listOf("Project Info", "Dependencies")
+                    val pages = listOf("Project Info", "Dependencies", "Endpoints")
                     val state = rememberPagerState(initialPage = 0) { 2 }
                     val scope = rememberCoroutineScope()
                     Column(
@@ -58,7 +58,7 @@ class QBWSpringBootConfigurationStep(private val moduleBuilder: QBWSpringBootMod
                         TabRow(
                             modifier = Modifier.fillMaxWidth(),
                             selectedTabIndex = state.currentPage,
-                            backgroundColor = QBWTheme.colors.gray,
+                            backgroundColor = QBWTheme.colors.black,
                             contentColor = QBWTheme.colors.white,
                         ) {
                             pages.forEachIndexed { index, page ->
