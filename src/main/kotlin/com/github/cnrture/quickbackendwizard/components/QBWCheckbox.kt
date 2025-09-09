@@ -18,7 +18,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -33,7 +34,6 @@ fun QBWCheckbox(
     modifier: Modifier = Modifier,
     checked: Boolean,
     label: String? = null,
-    color: Color = QBWTheme.colors.red,
     onCheckedChange: (Boolean) -> Unit = {},
 ) {
     Row(
@@ -46,13 +46,19 @@ fun QBWCheckbox(
             .then(
                 if (checked) {
                     Modifier.background(
-                        color = color,
+                        brush = Brush.horizontalGradient(
+                            colors = listOf(QBWTheme.colors.red.copy(0.7f), QBWTheme.colors.purple.copy(0.7f)),
+                            tileMode = TileMode.Mirror,
+                        ),
                         shape = RoundedCornerShape(12.dp)
                     )
                 } else {
                     Modifier.border(
                         width = 1.dp,
-                        color = color,
+                        brush = Brush.horizontalGradient(
+                            colors = listOf(QBWTheme.colors.red.copy(0.7f), QBWTheme.colors.purple.copy(0.7f)),
+                            tileMode = TileMode.Mirror,
+                        ),
                         shape = RoundedCornerShape(12.dp)
                     )
                 }
@@ -70,17 +76,9 @@ fun QBWCheckbox(
                 onCheckedChange = onCheckedChange,
                 interactionSource = NoRippleInteractionSource(),
                 colors = CheckboxDefaults.colors(
-                    checkedColor = if (checked) {
-                        QBWTheme.colors.white
-                    } else {
-                        color
-                    },
+                    checkedColor = QBWTheme.colors.white,
                     uncheckedColor = QBWTheme.colors.white,
-                    checkmarkColor = if (checked) {
-                        color
-                    } else {
-                        QBWTheme.colors.white
-                    },
+                    checkmarkColor = if (checked) QBWTheme.colors.purple else QBWTheme.colors.white,
                 )
             )
         }
