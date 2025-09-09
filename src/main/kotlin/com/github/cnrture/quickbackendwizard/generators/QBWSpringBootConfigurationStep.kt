@@ -1,11 +1,14 @@
 package com.github.cnrture.quickbackendwizard.generators
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Divider
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.Tab
+import androidx.compose.material.TabRow
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposePanel
 import androidx.compose.ui.graphics.Brush
@@ -14,11 +17,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.cnrture.quickbackendwizard.components.QBWCheckbox
 import com.github.cnrture.quickbackendwizard.components.QBWText
-import com.github.cnrture.quickbackendwizard.components.QBWTextField
 import com.github.cnrture.quickbackendwizard.theme.QBWTheme
 import com.intellij.ide.util.projectWizard.ModuleWizardStep
+import kotlinx.coroutines.launch
 import java.awt.BorderLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -30,6 +32,9 @@ class QBWSpringBootConfigurationStep(private val moduleBuilder: QBWSpringBootMod
         ComposePanel().apply {
             setContent {
                 QBWTheme {
+                    val pages = listOf("Project Info", "Dependencies")
+                    val state = rememberPagerState(initialPage = 0) { 2 }
+                    val scope = rememberCoroutineScope()
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -39,191 +44,55 @@ class QBWSpringBootConfigurationStep(private val moduleBuilder: QBWSpringBootMod
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(24.dp),
-                            text = "Quick Project Wizard",
+                            text = "Quick Backend Wizard",
                             style = TextStyle(
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.Bold,
                                 brush = Brush.horizontalGradient(
-                                    colors = listOf(QBWTheme.colors.red, QBWTheme.colors.purple, QBWTheme.colors.green),
+                                    colors = listOf(QBWTheme.colors.red, QBWTheme.colors.purple),
                                     tileMode = TileMode.Mirror,
                                 ),
                             ),
                         )
-                        MainContent()
+
+                        TabRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            selectedTabIndex = state.currentPage,
+                            backgroundColor = QBWTheme.colors.gray,
+                            contentColor = QBWTheme.colors.white,
+                        ) {
+                            pages.forEachIndexed { index, page ->
+                                val isSelected = index == state.currentPage
+                                Tab(
+                                    selected = state.currentPage == index,
+                                    onClick = { scope.launch { state.animateScrollToPage(index) } },
+                                    text = {
+                                        QBWText(
+                                            text = page,
+                                            color = if (isSelected) QBWTheme.colors.white else QBWTheme.colors.lightGray,
+                                            style = TextStyle(fontWeight = FontWeight.SemiBold),
+                                        )
+                                    },
+                                )
+                            }
+                        }
+                        HorizontalPager(
+                            modifier = Modifier.weight(1f),
+                            state = state,
+                            userScrollEnabled = false,
+                        ) {
+                            when (it) {
+                                0 -> ProjectInfoContent(moduleBuilder)
+                                1 -> DependenciesContent(moduleBuilder)
+                                else -> {}
+                            }
+                        }
                     }
                 }
             }
             panel.add(this)
         }
         return panel
-    }
-
-    @Composable
-    private fun MainContent() {
-        var projectName by remember { mutableStateOf(moduleBuilder.projectName) }
-        var groupId by remember { mutableStateOf(moduleBuilder.groupId) }
-        var packageName by remember { mutableStateOf(moduleBuilder.packageName) }
-        var version by remember { mutableStateOf(moduleBuilder.version) }
-        var isSpringWebSelected by remember { mutableStateOf(false) }
-        var isSpringDataJpaSelected by remember { mutableStateOf(false) }
-        var isH2DatabaseSelected by remember { mutableStateOf(false) }
-        var isSpringSecuritySelected by remember { mutableStateOf(false) }
-        var isValidationSelected by remember { mutableStateOf(false) }
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(QBWTheme.colors.gray)
-                .verticalScroll(rememberScrollState())
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            QBWText(
-                text = "Spring Boot Configuration",
-                color = QBWTheme.colors.white,
-                style = TextStyle(
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                ),
-            )
-            QBWText(
-                text = "Configure your Spring Boot project settings and dependencies.",
-                color = QBWTheme.colors.lightGray,
-                style = TextStyle(fontSize = 14.sp),
-            )
-            Divider(
-                modifier = Modifier.padding(vertical = 8.dp),
-                color = QBWTheme.colors.lightGray,
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                InputArea(
-                    modifier = Modifier.weight(1f),
-                    placeholder = "Project Name",
-                    value = projectName,
-                    onValueChange = {
-                        projectName = it
-                        moduleBuilder.projectName = it
-                    },
-                )
-                InputArea(
-                    modifier = Modifier.weight(1f),
-                    placeholder = "Version",
-                    value = version,
-                    onValueChange = {
-                        version = it
-                        moduleBuilder.version = it
-                    },
-                )
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                InputArea(
-                    modifier = Modifier.weight(1f),
-                    placeholder = "Group",
-                    value = groupId,
-                    onValueChange = {
-                        groupId = it
-                        moduleBuilder.groupId = it
-                    },
-                )
-                InputArea(
-                    modifier = Modifier.weight(1f),
-                    placeholder = "Package Name",
-                    value = packageName,
-                    onValueChange = {
-                        packageName = it
-                        moduleBuilder.packageName = it
-                    },
-                )
-            }
-            Divider(
-                modifier = Modifier.padding(vertical = 8.dp),
-                color = QBWTheme.colors.lightGray,
-            )
-            QBWText(
-                text = "Select Dependencies:",
-                color = QBWTheme.colors.white,
-                style = TextStyle(
-                    fontWeight = FontWeight.SemiBold,
-                ),
-            )
-            QBWCheckbox(
-                checked = isSpringWebSelected,
-                label = "Spring Web",
-                color = QBWTheme.colors.green,
-                onCheckedChange = {
-                    isSpringWebSelected = it
-                    moduleBuilder.includeSpringWeb = it
-                },
-            )
-            QBWCheckbox(
-                checked = isSpringDataJpaSelected,
-                label = "Spring Data JPA",
-                color = QBWTheme.colors.green,
-                onCheckedChange = {
-                    isSpringDataJpaSelected = it
-                    moduleBuilder.includeSpringDataJpa = it
-                },
-            )
-            QBWCheckbox(
-                checked = isH2DatabaseSelected,
-                label = "H2 Database",
-                color = QBWTheme.colors.green,
-                onCheckedChange = {
-                    isH2DatabaseSelected = it
-                    moduleBuilder.includeH2Database = it
-                },
-            )
-            QBWCheckbox(
-                checked = isSpringSecuritySelected,
-                label = "Spring Security",
-                color = QBWTheme.colors.green,
-                onCheckedChange = {
-                    isSpringSecuritySelected = it
-                    moduleBuilder.includeSpringSecurity = it
-                },
-            )
-            QBWCheckbox(
-                checked = isValidationSelected,
-                label = "Validation",
-                color = QBWTheme.colors.green,
-                onCheckedChange = {
-                    isValidationSelected = it
-                    moduleBuilder.includeValidation = it
-                },
-            )
-        }
-    }
-
-    @Composable
-    private fun InputArea(
-        modifier: Modifier = Modifier,
-        placeholder: String,
-        value: String,
-        onValueChange: (String) -> Unit,
-    ) {
-        Column(
-            modifier = modifier,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            QBWText(
-                text = placeholder,
-                color = QBWTheme.colors.white,
-                style = TextStyle(
-                    fontWeight = FontWeight.SemiBold,
-                ),
-            )
-            QBWTextField(
-                modifier = Modifier.fillMaxWidth(),
-                placeholder = placeholder,
-                value = value,
-                onValueChange = onValueChange,
-            )
-        }
     }
 
     override fun updateDataModel() = Unit
