@@ -11,7 +11,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.cnrture.quickbackendwizard.components.QBWCheckbox
 import com.github.cnrture.quickbackendwizard.components.QBWText
 import com.github.cnrture.quickbackendwizard.components.QBWTextField
 import com.github.cnrture.quickbackendwizard.theme.QBWTheme
