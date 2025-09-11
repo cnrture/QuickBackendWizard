@@ -33,7 +33,7 @@ class QBWSpringBootConfigurationStep(private val moduleBuilder: QBWSpringBootMod
             setContent {
                 QBWTheme {
                     val pages = listOf("Project Info", "Dependencies", "Endpoints")
-                    val state = rememberPagerState(initialPage = 0) { 2 }
+                    val state = rememberPagerState(initialPage = 0) { 3 }
                     val scope = rememberCoroutineScope()
                     Column(
                         modifier = Modifier
@@ -84,7 +84,7 @@ class QBWSpringBootConfigurationStep(private val moduleBuilder: QBWSpringBootMod
                             when (it) {
                                 0 -> ProjectInfoContent(moduleBuilder)
                                 1 -> DependenciesContent(moduleBuilder)
-                                else -> {}
+                                else -> EndpointsContent(moduleBuilder)
                             }
                         }
                     }
