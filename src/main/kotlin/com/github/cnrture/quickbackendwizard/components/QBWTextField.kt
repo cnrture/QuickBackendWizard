@@ -13,6 +13,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.cnrture.quickbackendwizard.theme.QBWTheme
@@ -26,6 +27,7 @@ fun QBWTextField(
     color: Color = QBWTheme.colors.white,
     textStyle: TextStyle = TextStyle.Default,
     isSingleLine: Boolean = true,
+    isEnabled: Boolean = true,
 ) {
     BasicTextField(
         modifier = modifier
@@ -41,9 +43,11 @@ fun QBWTextField(
         textStyle = textStyle.copy(
             color = QBWTheme.colors.white,
             fontSize = 14.sp,
+            fontWeight = FontWeight.Medium,
         ),
         singleLine = isSingleLine,
         cursorBrush = SolidColor(value = color),
+        enabled = isEnabled,
         decorationBox = { innerTextField ->
             Box(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
