@@ -11,6 +11,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.cnrture.quickbackendwizard.components.QBWCheckbox
 import com.github.cnrture.quickbackendwizard.components.QBWText
 import com.github.cnrture.quickbackendwizard.components.QBWTextField
 import com.github.cnrture.quickbackendwizard.theme.QBWTheme
@@ -21,6 +22,7 @@ fun ProjectInfoContent(moduleBuilder: QBWSpringBootModuleBuilder) {
     var groupId by remember { mutableStateOf(moduleBuilder.groupId) }
     var packageName by remember { mutableStateOf(moduleBuilder.packageName) }
     var version by remember { mutableStateOf(moduleBuilder.version) }
+    var isAddGradleTasks by remember { mutableStateOf(moduleBuilder.isAddGradleTasks) }
 
     Column(
         modifier = Modifier
@@ -93,6 +95,15 @@ fun ProjectInfoContent(moduleBuilder: QBWSpringBootModuleBuilder) {
                 },
             )
         }
+        Spacer(modifier = Modifier.height(8.dp))
+        QBWCheckbox(
+            checked = isAddGradleTasks,
+            label = "Add Supporting Gradle Tasks",
+            onCheckedChange = {
+                isAddGradleTasks = it
+                moduleBuilder.isAddGradleTasks = it
+            },
+        )
     }
 }
 

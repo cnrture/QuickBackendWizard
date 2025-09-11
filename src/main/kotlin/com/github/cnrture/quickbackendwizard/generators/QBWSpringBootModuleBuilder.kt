@@ -27,6 +27,7 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
     var includeH2Database: Boolean = false
     var includeSpringSecurity: Boolean = false
     var includeValidation: Boolean = false
+    var isAddGradleTasks: Boolean = false
 
     var endpoints: List<EndpointInfo> = emptyList()
 
@@ -148,7 +149,7 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         dependencies.add("testRuntimeOnly(\"org.junit.platform:junit-platform-launcher\")")
 
         val dependenciesBlock = dependencies.joinToString("\n    ")
-        val content = getGradleContent(groupId, version, dependenciesBlock)
+        val content = getGradleContent(groupId, version, dependenciesBlock, isAddGradleTasks)
         createFile(root, "build.gradle.kts", content)
     }
 
