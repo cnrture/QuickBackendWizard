@@ -1,9 +1,7 @@
 package com.github.cnrture.quickbackendwizard.contents
 
-import com.github.cnrture.quickbackendwizard.generators.EndpointInfo
-
 fun getSqlCreateTableScript(
-    endpoints: List<EndpointInfo>,
+    endpoints: List<String>,
     databaseType: String,
     projectName: String = "demo",
 ): String {
@@ -72,9 +70,9 @@ GRANT ALL PRIVILEGES ON DATABASE ${projectName.lowercase()} TO appuser;
     }
 }
 
-private fun getTableCreationScript(endpoint: EndpointInfo, databaseType: String): String {
-    val tableName = endpoint.name
-    val entityName = endpoint.name.removeSuffix("s").replaceFirstChar { it.uppercase() }
+private fun getTableCreationScript(endpoint: String, databaseType: String): String {
+    val tableName = endpoint
+    val entityName = endpoint.removeSuffix("s").replaceFirstChar { it.uppercase() }
 
     return when (databaseType) {
         "mysql", "mariadb" -> """
