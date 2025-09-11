@@ -24,10 +24,10 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
 
     var includeSpringWeb: Boolean = false
     var includeSpringDataJpa: Boolean = false
-    var includeH2Database: Boolean = false
     var includeSpringSecurity: Boolean = false
     var includeValidation: Boolean = false
     var isAddGradleTasks: Boolean = false
+    var selectedDatabase: String = DatabaseType.ALL.first().type
 
     var endpoints: List<EndpointInfo> = emptyList()
 
@@ -35,7 +35,7 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
 
     override fun getPresentableName(): String = "QBW Spring Boot"
 
-    override fun getDescription(): String = "Spring boot project with Quick Backend Wizard configuration"
+    override fun getDescription(): String = "Kotlin spring boot project with Quick Backend Wizard configuration"
 
     override fun setupRootModel(modifiableRootModel: ModifiableRootModel) {
         super.setupRootModel(modifiableRootModel)
@@ -111,6 +111,7 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         createMainApplicationFile(root)
         createGitIgnore(root)
         createApplicationProperties(root)
+        createDatabaseFiles(root)
 
         endpoints.forEach { endpoint ->
             createEntityFile(root, endpoint)
@@ -132,8 +133,22 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         if (includeSpringDataJpa) {
             dependencies.add("implementation(\"org.springframework.boot:spring-boot-starter-data-jpa\")")
         }
-        if (includeH2Database) {
-            dependencies.add("implementation(\"com.h2database:h2\")")
+        when (selectedDatabase) {
+            "h2" -> {
+                dependencies.add("implementation(\"com.h2database:h2\")")
+            }
+
+            "mysql" -> {
+                dependencies.add("implementation(\"mysql:mysql-connector-java:8.0.33\")")
+            }
+
+            "mariadb" -> {
+                dependencies.add("implementation(\"org.mariadb.jdbc:mariadb-java-client:3.1.4\")")
+            }
+
+            "postgresql" -> {
+                dependencies.add("implementation(\"org.postgresql:postgresql:42.6.0\")")
+            }
         }
         if (includeSpringSecurity) {
             dependencies.add("implementation(\"org.springframework.boot:spring-boot-starter-security\")")
@@ -204,9 +219,21 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
             ?.findChild("main")
             ?.findChild("resources")
 
-        val content = getApplicationPropertiesContent(projectName)
+        val content = getApplicationPropertiesContent(projectName, selectedDatabase)
 
         resourcesDir?.let { createFile(it, "application.properties", content) }
+    }
+
+    private fun createDatabaseFiles(root: VirtualFile) {
+        if (selectedDatabase != "none" && endpoints.isNotEmpty()) {
+            val sqlScript = getSqlCreateTableScript(endpoints, selectedDatabase, projectName)
+            if (sqlScript.isNotEmpty()) {
+                createFile(root, "create_tables.sql", sqlScript)
+            }
+
+            val setupInstructions = getDatabaseSetupInstructions(selectedDatabase, projectName)
+            createFile(root, "DATABASE_SETUP.md", setupInstructions)
+        }
     }
 
     private fun createFile(parent: VirtualFile, fileName: String, content: String): VirtualFile {
