@@ -28,6 +28,8 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
     var includeSpringSecurity: Boolean = false
     var includeValidation: Boolean = false
 
+    var endpoints: List<EndpointInfo> = emptyList()
+
     override fun getBuilderId(): String = "qbw.spring.boot"
 
     override fun getPresentableName(): String = "QBW Spring Boot"
@@ -108,6 +110,13 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         createMainApplicationFile(root)
         createGitIgnore(root)
         createApplicationProperties(root)
+
+        endpoints.forEach { endpoint ->
+            createEntityFile(root, endpoint)
+            createRepositoryFile(root, endpoint)
+            createServiceFile(root, endpoint)
+            createControllerFile(root, endpoint)
+        }
     }
 
     private fun createBuildGradle(root: VirtualFile) {
@@ -173,9 +182,7 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
             ?.findChild("main")
             ?.findChild("kotlin")
 
-        packageParts.forEach { part ->
-            srcKotlinDir = srcKotlinDir?.findChild(part)
-        }
+        packageParts.forEach { srcKotlinDir = srcKotlinDir?.findChild(it) }
 
         val className = projectName.split("-").joinToString("") { part ->
             part.replaceFirstChar { it.uppercase() }
@@ -183,9 +190,7 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
 
         val content = getApplicationContent(packageName, className)
 
-        srcKotlinDir?.let { packageDir ->
-            createFile(packageDir, "$className.kt", content)
-        }
+        srcKotlinDir?.let { createFile(it, "$className.kt", content) }
     }
 
     private fun createGitIgnore(root: VirtualFile) {
@@ -200,15 +205,86 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
 
         val content = getApplicationPropertiesContent(projectName)
 
-        resourcesDir?.let { resDir ->
-            createFile(resDir, "application.properties", content)
-        }
+        resourcesDir?.let { createFile(it, "application.properties", content) }
     }
 
     private fun createFile(parent: VirtualFile, fileName: String, content: String): VirtualFile {
         val file = parent.createChildData(this, fileName)
         file.setBinaryContent(content.toByteArray(Charsets.UTF_8))
         return file
+    }
+
+    private fun createEntityFile(root: VirtualFile, endpoint: EndpointInfo) {
+        val packageParts = packageName.split(".")
+        var srcKotlinDir = root.findChild("src")
+            ?.findChild("main")
+            ?.findChild("kotlin")
+
+        packageParts.forEach { srcKotlinDir = srcKotlinDir?.findChild(it) }
+
+        val entityDir = srcKotlinDir?.findChild("entity") ?: srcKotlinDir?.createChildDirectory(this, "entity")
+        val entityName = endpoint.name.removeSuffix("s").replaceFirstChar { it.uppercase() }
+        val content = getEntityContent(packageName, entityName, endpoint)
+
+        entityDir?.let { createFile(it, "$entityName.kt", content) }
+    }
+
+    private fun createRepositoryFile(root: VirtualFile, endpoint: EndpointInfo) {
+        val packageParts = packageName.split(".")
+        var srcKotlinDir = root.findChild("src")
+            ?.findChild("main")
+            ?.findChild("kotlin")
+
+        packageParts.forEach { srcKotlinDir = srcKotlinDir?.findChild(it) }
+
+        val repositoryDir =
+            srcKotlinDir?.findChild("repository") ?: srcKotlinDir?.createChildDirectory(this, "repository")
+
+        val entityName = endpoint.name.removeSuffix("s").replaceFirstChar { it.uppercase() }
+        val repositoryName = "${entityName}Repository"
+
+        val content = getRepositoryContent(packageName, entityName, repositoryName)
+
+        repositoryDir?.let { createFile(it, "$repositoryName.kt", content) }
+    }
+
+    private fun createServiceFile(root: VirtualFile, endpoint: EndpointInfo) {
+        val packageParts = packageName.split(".")
+        var srcKotlinDir = root.findChild("src")
+            ?.findChild("main")
+            ?.findChild("kotlin")
+
+        packageParts.forEach { srcKotlinDir = srcKotlinDir?.findChild(it) }
+
+        val serviceDir = srcKotlinDir?.findChild("service") ?: srcKotlinDir?.createChildDirectory(this, "service")
+
+        val entityName = endpoint.name.removeSuffix("s").replaceFirstChar { it.uppercase() }
+        val serviceName = "${entityName}Service"
+        val repositoryName = "${entityName}Repository"
+
+        val content = getServiceContent(packageName, entityName, serviceName, repositoryName)
+
+        serviceDir?.let { createFile(it, "$serviceName.kt", content) }
+    }
+
+    private fun createControllerFile(root: VirtualFile, endpoint: EndpointInfo) {
+        val packageParts = packageName.split(".")
+        var srcKotlinDir = root.findChild("src")
+            ?.findChild("main")
+            ?.findChild("kotlin")
+
+        packageParts.forEach { srcKotlinDir = srcKotlinDir?.findChild(it) }
+
+        val controllerDir =
+            srcKotlinDir?.findChild("controller") ?: srcKotlinDir?.createChildDirectory(this, "controller")
+
+        val entityName = endpoint.name.removeSuffix("s").replaceFirstChar { it.uppercase() }
+        val serviceName = "${entityName}Service"
+        val controllerName = "${entityName}Controller"
+
+        val content = getControllerContent(packageName, entityName, controllerName, serviceName, endpoint)
+
+        controllerDir?.let { createFile(it, "$controllerName.kt", content) }
     }
 
     override fun createWizardSteps(

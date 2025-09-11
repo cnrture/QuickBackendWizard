@@ -33,6 +33,10 @@ fun EndpointsContent(
         mutableStateOf(listOf(EndpointInfo("", "GET")))
     }
 
+    LaunchedEffect(endpoints) {
+        moduleBuilder.endpoints = endpoints.filter { it.name.isNotBlank() }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -77,7 +81,6 @@ fun EndpointsContent(
             )
         }
 
-        // Plus button to add new endpoint
         QBWButton(
             modifier = Modifier
                 .fillMaxWidth()
@@ -109,7 +112,6 @@ private fun EndpointRow(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Endpoint name field
             QBWTextField(
                 modifier = Modifier.weight(1f),
                 value = endpoint.name,
@@ -119,7 +121,6 @@ private fun EndpointRow(
                 placeholder = "Endpoint name (e.g. users, orders)"
             )
 
-            // HTTP method dropdown
             HttpMethodDropdown(
                 selectedMethod = endpoint.httpMethod,
                 onMethodSelected = { newMethod ->
@@ -127,7 +128,6 @@ private fun EndpointRow(
                 }
             )
 
-            // Delete button (only show if onDelete is provided)
             onDelete?.let { deleteAction ->
                 IconButton(
                     onClick = deleteAction,
