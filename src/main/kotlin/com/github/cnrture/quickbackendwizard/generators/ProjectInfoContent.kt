@@ -1,6 +1,5 @@
 package com.github.cnrture.quickbackendwizard.generators
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -27,7 +26,6 @@ fun ProjectInfoContent(moduleBuilder: QBWSpringBootModuleBuilder) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(QBWTheme.colors.gray)
             .verticalScroll(rememberScrollState())
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),

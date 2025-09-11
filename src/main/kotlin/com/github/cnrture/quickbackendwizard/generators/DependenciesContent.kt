@@ -1,6 +1,5 @@
 package com.github.cnrture.quickbackendwizard.generators
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,7 +27,6 @@ fun DependenciesContent(moduleBuilder: QBWSpringBootModuleBuilder) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(QBWTheme.colors.gray)
             .verticalScroll(rememberScrollState())
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),

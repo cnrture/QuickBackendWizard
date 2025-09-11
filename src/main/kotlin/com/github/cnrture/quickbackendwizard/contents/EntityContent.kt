@@ -1,11 +1,9 @@
 package com.github.cnrture.quickbackendwizard.contents
 
-import com.github.cnrture.quickbackendwizard.generators.EndpointInfo
-
 fun getEntityContent(
     packageName: String,
     entityName: String,
-    endpoint: EndpointInfo,
+    endpoint: String,
 ) = """
 package $packageName.entity
 
@@ -18,7 +16,7 @@ import jakarta.persistence.Table
 import java.time.LocalDateTime
 
 @Entity
-@Table(name = "${endpoint.name}")
+@Table(name = "$endpoint")
 data class $entityName(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

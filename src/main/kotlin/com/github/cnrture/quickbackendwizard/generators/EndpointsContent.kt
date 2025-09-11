@@ -1,10 +1,12 @@
 package com.github.cnrture.quickbackendwizard.generators
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.Card
+import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
@@ -15,32 +17,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.cnrture.quickbackendwizard.components.QBWButton
-import com.github.cnrture.quickbackendwizard.components.QBWOutlinedButton
 import com.github.cnrture.quickbackendwizard.components.QBWText
 import com.github.cnrture.quickbackendwizard.components.QBWTextField
 import com.github.cnrture.quickbackendwizard.theme.QBWTheme
-
-data class EndpointInfo(
-    val name: String,
-    val httpMethod: String,
-)
 
 @Composable
 fun EndpointsContent(
     moduleBuilder: QBWSpringBootModuleBuilder,
 ) {
     var endpoints by remember {
-        mutableStateOf(listOf(EndpointInfo("", "GET")))
+        mutableStateOf(listOf(""))
     }
 
     LaunchedEffect(endpoints) {
-        moduleBuilder.endpoints = endpoints.filter { it.name.isNotBlank() }
+        moduleBuilder.endpoints = endpoints.filter { it.isNotBlank() }
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(QBWTheme.colors.gray)
             .verticalScroll(rememberScrollState())
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -88,7 +83,7 @@ fun EndpointsContent(
             text = "Add Endpoint",
             backgroundColor = QBWTheme.colors.purple,
             onClick = {
-                endpoints = endpoints + EndpointInfo("", "GET")
+                endpoints = endpoints + ""
             }
         )
     }
@@ -96,8 +91,8 @@ fun EndpointsContent(
 
 @Composable
 private fun EndpointRow(
-    endpoint: EndpointInfo,
-    onEndpointChange: (EndpointInfo) -> Unit,
+    endpoint: String,
+    onEndpointChange: (String) -> Unit,
     onDelete: (() -> Unit)? = null,
 ) {
     Card(
@@ -114,20 +109,12 @@ private fun EndpointRow(
         ) {
             QBWTextField(
                 modifier = Modifier.weight(1f),
-                value = endpoint.name,
+                value = endpoint,
                 onValueChange = { newName ->
-                    onEndpointChange(endpoint.copy(name = newName))
+                    onEndpointChange(newName)
                 },
                 placeholder = "Endpoint name (e.g. users, orders)"
             )
-
-            HttpMethodDropdown(
-                selectedMethod = endpoint.httpMethod,
-                onMethodSelected = { newMethod ->
-                    onEndpointChange(endpoint.copy(httpMethod = newMethod))
-                }
-            )
-
             onDelete?.let { deleteAction ->
                 IconButton(
                     onClick = deleteAction,
@@ -137,43 +124,6 @@ private fun EndpointRow(
                         imageVector = Icons.Default.Delete,
                         contentDescription = "Delete endpoint",
                         tint = QBWTheme.colors.red
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun HttpMethodDropdown(
-    selectedMethod: String,
-    onMethodSelected: (String) -> Unit,
-) {
-    val httpMethods = listOf("GET", "POST", "PUT", "DELETE", "PATCH")
-    var expanded by remember { mutableStateOf(false) }
-
-    Box {
-        QBWOutlinedButton(
-            text = "$selectedMethod ▼",
-            backgroundColor = QBWTheme.colors.purple,
-            onClick = { expanded = true }
-        )
-
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier.background(QBWTheme.colors.black)
-        ) {
-            httpMethods.forEach { method ->
-                DropdownMenuItem(
-                    onClick = {
-                        onMethodSelected(method)
-                        expanded = false
-                    }
-                ) {
-                    QBWText(
-                        text = method,
-                        color = QBWTheme.colors.white
                     )
                 }
             }
