@@ -28,8 +28,11 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
     var includeValidation: Boolean = false
     var isAddGradleTasks: Boolean = false
     var selectedDatabase: String = DatabaseType.ALL.first().type
+    var dbName: String = ""
+    var dbUsername: String = ""
+    var dbPassword: String = ""
 
-    var endpoints: List<EndpointInfo> = emptyList()
+    var endpoints: List<String> = emptyList()
 
     override fun getBuilderId(): String = "qbw.spring.boot"
 
@@ -242,7 +245,7 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         return file
     }
 
-    private fun createEntityFile(root: VirtualFile, endpoint: EndpointInfo) {
+    private fun createEntityFile(root: VirtualFile, endpoint: String) {
         val packageParts = packageName.split(".")
         var srcKotlinDir = root.findChild("src")
             ?.findChild("main")
@@ -251,13 +254,13 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         packageParts.forEach { srcKotlinDir = srcKotlinDir?.findChild(it) }
 
         val entityDir = srcKotlinDir?.findChild("entity") ?: srcKotlinDir?.createChildDirectory(this, "entity")
-        val entityName = endpoint.name.removeSuffix("s").replaceFirstChar { it.uppercase() }
+        val entityName = endpoint.removeSuffix("s").replaceFirstChar { it.uppercase() }
         val content = getEntityContent(packageName, entityName, endpoint)
 
         entityDir?.let { createFile(it, "$entityName.kt", content) }
     }
 
-    private fun createRepositoryFile(root: VirtualFile, endpoint: EndpointInfo) {
+    private fun createRepositoryFile(root: VirtualFile, endpoint: String) {
         val packageParts = packageName.split(".")
         var srcKotlinDir = root.findChild("src")
             ?.findChild("main")
@@ -268,7 +271,7 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         val repositoryDir =
             srcKotlinDir?.findChild("repository") ?: srcKotlinDir?.createChildDirectory(this, "repository")
 
-        val entityName = endpoint.name.removeSuffix("s").replaceFirstChar { it.uppercase() }
+        val entityName = endpoint.removeSuffix("s").replaceFirstChar { it.uppercase() }
         val repositoryName = "${entityName}Repository"
 
         val content = getRepositoryContent(packageName, entityName, repositoryName)
@@ -276,7 +279,7 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         repositoryDir?.let { createFile(it, "$repositoryName.kt", content) }
     }
 
-    private fun createServiceFile(root: VirtualFile, endpoint: EndpointInfo) {
+    private fun createServiceFile(root: VirtualFile, endpoint: String) {
         val packageParts = packageName.split(".")
         var srcKotlinDir = root.findChild("src")
             ?.findChild("main")
@@ -286,7 +289,7 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
 
         val serviceDir = srcKotlinDir?.findChild("service") ?: srcKotlinDir?.createChildDirectory(this, "service")
 
-        val entityName = endpoint.name.removeSuffix("s").replaceFirstChar { it.uppercase() }
+        val entityName = endpoint.removeSuffix("s").replaceFirstChar { it.uppercase() }
         val serviceName = "${entityName}Service"
         val repositoryName = "${entityName}Repository"
 
@@ -295,7 +298,7 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         serviceDir?.let { createFile(it, "$serviceName.kt", content) }
     }
 
-    private fun createControllerFile(root: VirtualFile, endpoint: EndpointInfo) {
+    private fun createControllerFile(root: VirtualFile, endpoint: String) {
         val packageParts = packageName.split(".")
         var srcKotlinDir = root.findChild("src")
             ?.findChild("main")
@@ -306,7 +309,7 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         val controllerDir =
             srcKotlinDir?.findChild("controller") ?: srcKotlinDir?.createChildDirectory(this, "controller")
 
-        val entityName = endpoint.name.removeSuffix("s").replaceFirstChar { it.uppercase() }
+        val entityName = endpoint.removeSuffix("s").replaceFirstChar { it.uppercase() }
         val serviceName = "${entityName}Service"
         val controllerName = "${entityName}Controller"
 
