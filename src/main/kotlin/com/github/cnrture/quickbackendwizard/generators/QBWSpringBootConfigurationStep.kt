@@ -26,14 +26,13 @@ import javax.swing.JComponent
 import javax.swing.JPanel
 
 class QBWSpringBootConfigurationStep(private val moduleBuilder: QBWSpringBootModuleBuilder) : ModuleWizardStep() {
-
     override fun getComponent(): JComponent {
         val panel = JPanel(BorderLayout())
         ComposePanel().apply {
             setContent {
                 QBWTheme {
-                    val pages = listOf("Project Info", "Dependencies", "Endpoints")
-                    val state = rememberPagerState(initialPage = 0) { 3 }
+                    val pages = listOf("Project Info", "Dependencies", "Database", "Endpoints")
+                    val state = rememberPagerState(initialPage = 0) { 4 }
                     val scope = rememberCoroutineScope()
                     Column(
                         modifier = Modifier
@@ -59,7 +58,7 @@ class QBWSpringBootConfigurationStep(private val moduleBuilder: QBWSpringBootMod
                             modifier = Modifier.fillMaxWidth(),
                             selectedTabIndex = state.currentPage,
                             backgroundColor = QBWTheme.colors.black,
-                            contentColor = QBWTheme.colors.white,
+                            contentColor = QBWTheme.colors.red,
                         ) {
                             pages.forEachIndexed { index, page ->
                                 val isSelected = index == state.currentPage
@@ -69,8 +68,11 @@ class QBWSpringBootConfigurationStep(private val moduleBuilder: QBWSpringBootMod
                                     text = {
                                         QBWText(
                                             text = page,
-                                            color = if (isSelected) QBWTheme.colors.white else QBWTheme.colors.lightGray,
-                                            style = TextStyle(fontWeight = FontWeight.SemiBold),
+                                            color = if (isSelected) QBWTheme.colors.red else QBWTheme.colors.lightGray,
+                                            style = TextStyle(
+                                                fontSize = 16.sp,
+                                                fontWeight = FontWeight.SemiBold,
+                                            ),
                                         )
                                     },
                                 )
@@ -84,6 +86,7 @@ class QBWSpringBootConfigurationStep(private val moduleBuilder: QBWSpringBootMod
                             when (it) {
                                 0 -> ProjectInfoContent(moduleBuilder)
                                 1 -> DependenciesContent(moduleBuilder)
+                                2 -> DatabasesContent(moduleBuilder)
                                 else -> EndpointsContent(moduleBuilder)
                             }
                         }
