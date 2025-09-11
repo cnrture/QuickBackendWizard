@@ -1,13 +1,11 @@
 package com.github.cnrture.quickbackendwizard.contents
 
-import com.github.cnrture.quickbackendwizard.generators.EndpointInfo
-
 fun getControllerContent(
     packageName: String,
     entityName: String,
     controllerName: String,
     serviceName: String,
-    endpoint: EndpointInfo,
+    endpoint: String,
 ) = """
 package $packageName.controller
 
@@ -18,7 +16,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/${endpoint.name}")
+@RequestMapping("/$endpoint")
 class $controllerName(private val service: $serviceName) {
 
     @GetMapping
