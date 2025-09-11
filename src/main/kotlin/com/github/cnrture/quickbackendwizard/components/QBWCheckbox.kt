@@ -24,7 +24,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.github.cnrture.quickbackendwizard.common.NoRippleInteractionSource
 import com.github.cnrture.quickbackendwizard.theme.QBWTheme
 
@@ -47,7 +46,7 @@ fun QBWCheckbox(
                 if (checked) {
                     Modifier.background(
                         brush = Brush.horizontalGradient(
-                            colors = listOf(QBWTheme.colors.red.copy(0.7f), QBWTheme.colors.purple.copy(0.7f)),
+                            colors = listOf(QBWTheme.colors.red, QBWTheme.colors.purple),
                             tileMode = TileMode.Mirror,
                         ),
                         shape = RoundedCornerShape(12.dp)
@@ -56,7 +55,7 @@ fun QBWCheckbox(
                     Modifier.border(
                         width = 1.dp,
                         brush = Brush.horizontalGradient(
-                            colors = listOf(QBWTheme.colors.red.copy(0.7f), QBWTheme.colors.purple.copy(0.7f)),
+                            colors = listOf(QBWTheme.colors.red, QBWTheme.colors.purple),
                             tileMode = TileMode.Mirror,
                         ),
                         shape = RoundedCornerShape(12.dp)
@@ -88,7 +87,6 @@ fun QBWCheckbox(
                 text = label,
                 color = QBWTheme.colors.white,
                 style = TextStyle(
-                    fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold,
                 ),
             )

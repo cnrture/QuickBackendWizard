@@ -1,10 +1,7 @@
 package com.github.cnrture.quickbackendwizard.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
@@ -17,7 +14,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -31,7 +29,7 @@ import com.github.cnrture.quickbackendwizard.theme.QBWTheme
 fun QBWRadioButton(
     text: String,
     selected: Boolean,
-    color: Color = QBWTheme.colors.red,
+    description: String? = null,
     onClick: () -> Unit,
 ) {
     Row(
@@ -44,7 +42,10 @@ fun QBWRadioButton(
             .then(
                 if (selected) {
                     Modifier.background(
-                        color = color,
+                        Brush.horizontalGradient(
+                            colors = listOf(QBWTheme.colors.red, QBWTheme.colors.purple),
+                            tileMode = TileMode.Mirror,
+                        ),
                         shape = RoundedCornerShape(12.dp)
                     )
                 } else {
@@ -70,13 +71,25 @@ fun QBWRadioButton(
             )
         }
         Spacer(modifier = Modifier.size(6.dp))
-        QBWText(
-            text = text,
-            color = QBWTheme.colors.white,
-            style = TextStyle(
-                fontSize = 12.sp,
-                fontWeight = FontWeight.SemiBold,
-            ),
-        )
+        Column {
+            QBWText(
+                text = text,
+                color = QBWTheme.colors.white,
+                style = TextStyle(
+                    fontWeight = FontWeight.SemiBold,
+                ),
+            )
+            if (description != null) {
+                Spacer(modifier = Modifier.size(4.dp))
+                QBWText(
+                    text = description,
+                    color = QBWTheme.colors.white,
+                    style = TextStyle(
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal,
+                    ),
+                )
+            }
+        }
     }
 }
