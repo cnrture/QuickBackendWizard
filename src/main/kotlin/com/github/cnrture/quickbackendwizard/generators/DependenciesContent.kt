@@ -22,7 +22,6 @@ import com.github.cnrture.quickbackendwizard.theme.QBWTheme
 fun DependenciesContent(moduleBuilder: QBWSpringBootModuleBuilder) {
     var isSpringWebSelected by remember { mutableStateOf(false) }
     var isSpringDataJpaSelected by remember { mutableStateOf(false) }
-    var isH2DatabaseSelected by remember { mutableStateOf(false) }
     var isSpringSecuritySelected by remember { mutableStateOf(false) }
     var isValidationSelected by remember { mutableStateOf(false) }
 
@@ -65,14 +64,6 @@ fun DependenciesContent(moduleBuilder: QBWSpringBootModuleBuilder) {
             onCheckedChange = {
                 isSpringDataJpaSelected = it
                 moduleBuilder.includeSpringDataJpa = it
-            },
-        )
-        QBWCheckbox(
-            checked = isH2DatabaseSelected,
-            label = "H2 Database",
-            onCheckedChange = {
-                isH2DatabaseSelected = it
-                moduleBuilder.includeH2Database = it
             },
         )
         QBWCheckbox(
