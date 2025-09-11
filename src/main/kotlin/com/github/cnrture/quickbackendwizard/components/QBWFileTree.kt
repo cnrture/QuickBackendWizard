@@ -27,9 +27,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.cnrture.quickbackendwizard.theme.QBWTheme
 import com.github.cnrture.quickbackendwizard.common.file.ExpandableFile
 import com.github.cnrture.quickbackendwizard.common.file.FileTree
+import com.github.cnrture.quickbackendwizard.theme.QBWTheme
 
 @Composable
 fun QBWFileTree(
