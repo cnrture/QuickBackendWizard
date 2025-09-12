@@ -2,10 +2,7 @@ package com.github.cnrture.quickbackendwizard.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Checkbox
@@ -23,6 +20,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.github.cnrture.quickbackendwizard.common.NoRippleInteractionSource
 import com.github.cnrture.quickbackendwizard.theme.QBWTheme
 
@@ -32,6 +30,7 @@ fun QBWCheckbox(
     modifier: Modifier = Modifier,
     checked: Boolean,
     label: String? = null,
+    description: String? = null,
     onCheckedChange: (Boolean) -> Unit = {},
 ) {
     Row(
@@ -81,13 +80,26 @@ fun QBWCheckbox(
         }
         label?.let {
             Spacer(modifier = Modifier.size(6.dp))
-            QBWText(
-                text = label,
-                color = QBWTheme.colors.white,
-                style = TextStyle(
-                    fontWeight = FontWeight.SemiBold,
-                ),
-            )
+            Column {
+                QBWText(
+                    text = label,
+                    color = QBWTheme.colors.white,
+                    style = TextStyle(
+                        fontWeight = FontWeight.SemiBold,
+                    ),
+                )
+                if (description != null) {
+                    Spacer(modifier = Modifier.size(4.dp))
+                    QBWText(
+                        text = description,
+                        color = QBWTheme.colors.white,
+                        style = TextStyle(
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal,
+                        ),
+                    )
+                }
+            }
         }
     }
 }

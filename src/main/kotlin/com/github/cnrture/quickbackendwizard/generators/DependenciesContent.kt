@@ -51,6 +51,7 @@ fun DependenciesContent(moduleBuilder: QBWSpringBootModuleBuilder) {
         QBWCheckbox(
             checked = isSpringWebSelected,
             label = "Spring Web",
+            description = "Includes Spring MVC and embedded Tomcat server.",
             onCheckedChange = {
                 isSpringWebSelected = it
                 moduleBuilder.includeSpringWeb = it
@@ -59,6 +60,7 @@ fun DependenciesContent(moduleBuilder: QBWSpringBootModuleBuilder) {
         QBWCheckbox(
             checked = isSpringDataJpaSelected,
             label = "Spring Data JPA",
+            description = "Provides integration with JPA for database access.",
             onCheckedChange = {
                 isSpringDataJpaSelected = it
                 moduleBuilder.includeSpringDataJpa = it
@@ -67,6 +69,7 @@ fun DependenciesContent(moduleBuilder: QBWSpringBootModuleBuilder) {
         QBWCheckbox(
             checked = isSpringSecuritySelected,
             label = "Spring Security",
+            description = "Adds authentication and authorization support.",
             onCheckedChange = {
                 isSpringSecuritySelected = it
                 moduleBuilder.includeSpringSecurity = it
@@ -75,6 +78,7 @@ fun DependenciesContent(moduleBuilder: QBWSpringBootModuleBuilder) {
         QBWCheckbox(
             checked = isValidationSelected,
             label = "Validation",
+            description = "Enables bean validation using Hibernate Validator.",
             onCheckedChange = {
                 isValidationSelected = it
                 moduleBuilder.includeValidation = it

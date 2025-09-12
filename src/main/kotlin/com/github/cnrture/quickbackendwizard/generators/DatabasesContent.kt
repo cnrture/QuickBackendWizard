@@ -68,15 +68,14 @@ fun DatabasesContent(moduleBuilder: QBWSpringBootModuleBuilder) {
                 maxItemsInEachRow = 2,
             ) {
                 DatabaseType.ALL.forEach { it ->
-                    DatabaseItem(
+                    QBWRadioButton(
                         modifier = Modifier.weight(1f),
-                        name = it.name,
+                        text = it.name,
                         description = it.description,
-                        type = it.type,
-                        selectedType = selectedDatabase,
-                        onSelect = { type ->
-                            selectedDatabase = type
-                            moduleBuilder.selectedDatabase = type
+                        selected = it.type == selectedDatabase,
+                        onClick = {
+                            selectedDatabase = it.type
+                            moduleBuilder.selectedDatabase = it.type
                         },
                     )
                 }
@@ -155,22 +154,4 @@ fun DatabasesContent(moduleBuilder: QBWSpringBootModuleBuilder) {
             }
         }
     }
-}
-
-@Composable
-private fun DatabaseItem(
-    modifier: Modifier = Modifier,
-    name: String,
-    description: String,
-    type: String,
-    selectedType: String,
-    onSelect: (String) -> Unit,
-) {
-    QBWRadioButton(
-        modifier = modifier,
-        text = name,
-        description = description,
-        selected = selectedType == type,
-        onClick = { onSelect(type) },
-    )
 }

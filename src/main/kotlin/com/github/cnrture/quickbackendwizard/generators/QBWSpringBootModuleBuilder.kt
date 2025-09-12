@@ -118,12 +118,10 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         createMainApplicationFile(root)
         createGitIgnore(root)
         createApplicationProperties(root)
-        if (includeSpringWeb) createWebConfigFile(root)
         createReadmeFile(root)
-
         createDatabaseFiles(root)
         createEnvFile(root, dbName, dbUsername, dbPassword)
-
+        if (includeSpringWeb) createWebConfigFile(root)
         endpoints.forEach { endpoint ->
             createEntityFile(root, endpoint)
             createRepositoryFile(root, endpoint)
