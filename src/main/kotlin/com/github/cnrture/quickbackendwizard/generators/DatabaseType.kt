@@ -6,14 +6,14 @@ data class DatabaseType(
     val description: String,
 ) {
     companion object {
-        val H2 = DatabaseType("h2", "H2 (In-Memory)", "Lightweight in-memory database for development and testing.")
         val MYSQL = DatabaseType("mysql", "MySQL", "Popular open-source relational database management system.")
+        val H2 = DatabaseType("h2", "H2 (In-Memory)", "Lightweight in-memory database for development and testing.")
         val MARIADB = DatabaseType("mariadb", "MariaDB", "Community-developed fork of MySQL with enhanced features.")
         val POSTGRESQL = DatabaseType(
             "postgresql",
             "PostgreSQL",
             "Advanced open-source relational database with strong standards compliance."
         )
-        val ALL = listOf(H2, MYSQL, MARIADB, POSTGRESQL)
+        val ALL = listOf(MYSQL, H2, MARIADB, POSTGRESQL)
     }
 }

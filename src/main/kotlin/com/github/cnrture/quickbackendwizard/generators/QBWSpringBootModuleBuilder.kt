@@ -13,6 +13,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModifiableRootModel
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider
 import com.intellij.openapi.vfs.VirtualFile
+import fleet.kernel.db
 import java.io.IOException
 
 class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
@@ -27,7 +28,7 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
     var includeSpringSecurity: Boolean = false
     var includeValidation: Boolean = false
     var isAddGradleTasks: Boolean = false
-    var selectedDatabase: String = ""
+    var selectedDatabase: String = DatabaseType.MYSQL.type
     var dbName: String = ""
     var dbUsername: String = ""
     var dbPassword: String = ""
@@ -116,10 +117,8 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         createApplicationProperties(root)
         createWebConfigFile(root)
 
-        if (selectedDatabase.isNotEmpty()) {
-            createDatabaseFiles(root)
-            createEnvFile(root, dbName, dbUsername, dbPassword)
-        }
+        createDatabaseFiles(root)
+        createEnvFile(root, dbName, dbUsername, dbPassword)
 
         endpoints.forEach { endpoint ->
             createEntityFile(root, endpoint)
@@ -233,7 +232,7 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
     }
 
     private fun createDatabaseFiles(root: VirtualFile) {
-        if (selectedDatabase != "none" && endpoints.isNotEmpty()) {
+        if (endpoints.isNotEmpty()) {
             val sqlScript = getSqlCreateTableScript(endpoints, selectedDatabase, projectName)
             if (sqlScript.isNotEmpty()) {
                 createFile(root, "create_tables.sql", sqlScript)
@@ -324,6 +323,9 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
     }
 
     private fun createEnvFile(root: VirtualFile, dbName: String, dbUsername: String, dbPassword: String) {
+        val dbName = dbName.ifEmpty { "testdb" }
+        val dbUsername = dbUsername.ifEmpty { "root" }
+        val dbPassword = dbPassword.ifEmpty { "password" }
         val content = getEnvironmentContent(dbName, dbUsername, dbPassword)
         createFile(root, ".env", content)
     }
