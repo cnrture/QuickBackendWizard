@@ -115,6 +115,7 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         createGitIgnore(root)
         createApplicationProperties(root)
         createWebConfigFile(root)
+        createReadmeFile(root)
 
         createDatabaseFiles(root)
         createEnvFile(root, dbName, dbUsername, dbPassword)
@@ -128,49 +129,38 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
     }
 
     private fun createBuildGradle(root: VirtualFile) {
-        val dependencies = mutableListOf<String>()
-
-        dependencies.add("implementation(\"org.springframework.boot:spring-boot-starter\")")
-        dependencies.add("implementation(\"org.jetbrains.kotlin:kotlin-reflect\")")
-
-        if (includeSpringWeb) {
-            dependencies.add("implementation(\"org.springframework.boot:spring-boot-starter-web\")")
-        }
-        if (includeSpringDataJpa) {
-            dependencies.add("implementation(\"org.springframework.boot:spring-boot-starter-data-jpa\")")
-        }
-        when (selectedDatabase) {
-            "h2" -> {
-                dependencies.add("implementation(\"com.h2database:h2\")")
+        val dependencies = StringBuilder().apply {
+            append("implementation(\"org.springframework.boot:spring-boot-starter\")")
+            if (includeSpringWeb) {
+                append("\n    implementation(\"org.springframework.boot:spring-boot-starter-web\")")
             }
-
-            "mysql" -> {
-                dependencies.add("implementation(\"mysql:mysql-connector-java:8.0.33\")")
+            if (includeSpringDataJpa) {
+                append("\n    implementation(\"org.springframework.boot:spring-boot-starter-data-jpa\")")
             }
-
-            "mariadb" -> {
-                dependencies.add("implementation(\"org.mariadb.jdbc:mariadb-java-client:3.1.4\")")
+            if (includeSpringSecurity) {
+                append("\n    implementation(\"org.springframework.boot:spring-boot-starter-security\")")
             }
-
-            "postgresql" -> {
-                dependencies.add("implementation(\"org.postgresql:postgresql:42.6.0\")")
+            if (includeValidation) {
+                append("\n    implementation(\"org.springframework.boot:spring-boot-starter-validation\")")
             }
-        }
-        if (includeSpringSecurity) {
-            dependencies.add("implementation(\"org.springframework.boot:spring-boot-starter-security\")")
-        }
-        if (includeValidation) {
-            dependencies.add("implementation(\"org.springframework.boot:spring-boot-starter-validation\")")
-        }
+            append("\n    implementation(\"org.jetbrains.kotlin:kotlin-reflect\")")
+            append("\n    implementation(\"me.paulschwarz:spring-dotenv:4.0.0\")")
+            append("\n\n    // Database drivers")
+            when (selectedDatabase) {
+                "h2" -> append("\n    implementation(\"com.h2database:h2\")")
+                "mysql" -> append("\n    implementation(\"mysql:mysql-connector-java:8.0.33\")")
+                "mariadb" -> append("\n    implementation(\"org.mariadb.jdbc:mariadb-java-client:3.1.4\")")
+                "postgresql" -> append("\n    implementation(\"org.postgresql:postgresql:42.6.0\")")
+            }
+            append("\n\n    // Testing")
+            append("\n    testImplementation(\"org.springframework.boot:spring-boot-starter-test\")")
+            append("\n    testImplementation(\"org.jetbrains.kotlin:kotlin-test-junit5\")")
+            append("\n    testImplementation(\"io.mockk:mockk:1.13.8\")")
+            append("\n    testImplementation(\"io.mockk:mockk-jvm:1.13.8\")")
+            append("\n    testRuntimeOnly(\"org.junit.platform:junit-platform-launcher\")")
+        }.toString()
 
-        dependencies.add("testImplementation(\"org.springframework.boot:spring-boot-starter-test\")")
-        dependencies.add("testImplementation(\"org.jetbrains.kotlin:kotlin-test-junit5\")")
-        dependencies.add("testImplementation(\"io.mockk:mockk:1.13.8\")")
-        dependencies.add("testImplementation(\"io.mockk:mockk-jvm:1.13.8\")")
-        dependencies.add("testRuntimeOnly(\"org.junit.platform:junit-platform-launcher\")")
-
-        val dependenciesBlock = dependencies.joinToString("\n    ")
-        val content = getGradleContent(groupId, version, dependenciesBlock, isAddGradleTasks)
+        val content = getGradleContent(groupId, version, dependencies, isAddGradleTasks)
         createFile(root, "build.gradle.kts", content)
     }
 
@@ -341,6 +331,11 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         val content = getWebConfigContent(packageName)
 
         configDir?.let { createFile(it, "WebConfig.kt", content) }
+    }
+
+    private fun createReadmeFile(root: VirtualFile) {
+        val content = getReadmeContent(projectName, selectedDatabase, endpoints)
+        createFile(root, "README.md", content)
     }
 
     override fun createWizardSteps(
