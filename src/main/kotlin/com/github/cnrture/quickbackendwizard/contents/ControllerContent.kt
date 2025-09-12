@@ -15,6 +15,7 @@ fun getControllerContent(
             append("@Tag(name = \"$entityName Controller\", description = \"CRUD operations for $entityName\")\n")
         }
     }
+
     val imports = buildString {
         append("import $packageName.entity.$entityName\n")
         append("import $packageName.service.$serviceName\n")
@@ -26,6 +27,127 @@ fun getControllerContent(
         append("import org.springframework.http.ResponseEntity\n")
         append("import org.springframework.web.bind.annotation.*\n")
     }
+
+    val getAll = buildString {
+        if (isSwaggerEnabled) {
+            append("@Operation(summary = \"Get all $entityName\", description = \"Retrieve a list of all $entityName\")\n")
+            append("@ApiResponses(\n")
+            append("    value = [\n")
+            append("        ApiResponse(\n")
+            append("            success = true, message = \"Successfully retrieved\",\n")
+            append("            content = [Content(schema = Schema(implementation = ApiResponse::class))],\n")
+            append("        ),\n")
+            append("        ApiResponse(success = false, message = \"No content\"),\n")
+            append("    ]\n")
+            append(")\n")
+        }
+        append("@GetMapping\n")
+        append("fun getAll(): ResponseEntity<ApiResponse<List<$entityName>>> {\n")
+        append("    val entities = service.getAll()\n")
+        append("    return if (entities.success) {\n")
+        append("        ResponseEntity.noContent().build()\n")
+        append("    } else {\n")
+        append("        ResponseEntity.ok(entities)\n")
+        append("    }\n")
+        append("}\n")
+    }
+
+    val getById = buildString {
+        if (isSwaggerEnabled) {
+            append("@Operation(summary = \"Get $entityName by ID\", description = \"Retrieve a single $entityName by its ID\")\n")
+            append("@ApiResponses(\n")
+            append("    value = [\n")
+            append("        ApiResponse(\n")
+            append("            success = true, message = \"Successfully retrieved\",\n")
+            append("            content = [Content(schema = Schema(implementation = ApiResponse::class))],\n")
+            append("        ),\n")
+            append("        ApiResponse(success = false, message = \"$entityName not found\", data = null),\n")
+            append("    ]\n")
+            append(")\n")
+        }
+        append("@GetMapping(\"/{id}\")\n")
+        append("fun getById(@PathVariable id: Long): ResponseEntity<ApiResponse<$entityName>> {\n")
+        append("    val entity = service.findById(id)\n")
+        append("    return if (entity.success) {\n")
+        append("        ResponseEntity.ok(entity)\n")
+        append("    } else {\n")
+        append("        ResponseEntity.status(HttpStatus.NOT_FOUND).build()\n")
+        append("    }\n")
+        append("}\n")
+    }
+
+    val create = buildString {
+        if (isSwaggerEnabled) {
+            append("@Operation(summary = \"Create new $entityName\", description = \"Create a new $entityName\")\n")
+            append("@ApiResponses(\n")
+            append("    value = [\n")
+            append("        ApiResponse(\n")
+            append("            success = true, message = \"Successfully created\",\n")
+            append("            content = [Content(schema = Schema(implementation = ApiResponse::class))],\n")
+            append("        ),\n")
+            append("        ApiResponse(success = false, message = \"Invalid input\"),\n")
+            append("        ApiResponse(responseCode = \"500\", description = \"Internal server error\")\n")
+            append("    ]\n")
+            append(")\n")
+        }
+        append("@PostMapping\n")
+        append("fun create(@RequestBody entity: $entityName): ResponseEntity<ApiResponse<$entityName>> {\n")
+        append("    val createdEntity = service.save(entity)\n")
+        append("    return if (createdEntity.success) {\n")
+        append("        ResponseEntity.status(HttpStatus.CREATED).body(createdEntity)\n")
+        append("    } else {\n")
+        append("        ResponseEntity.status(HttpStatus.BAD_REQUEST).build()\n")
+        append("    }\n")
+        append("}\n")
+    }
+
+    val update = buildString {
+        if (isSwaggerEnabled) {
+            append("@Operation(summary = \"Update existing $entityName\", description = \"Update an existing $entityName by its ID\")\n")
+            append("@ApiResponses(\n")
+            append("    value = [\n")
+            append("        ApiResponse(\n")
+            append("            success = true, message = \"Successfully updated\",\n")
+            append("            content = [Content(schema = Schema(implementation = ApiResponse::class))],\n")
+            append("        ),\n")
+            append("        ApiResponse(success = false, message = \"$entityName not found\"),\n")
+            append("    ]\n")
+            append(")\n")
+        }
+        append("@PutMapping(\"/{id}\")\n")
+        append("fun update(@PathVariable id: Long, @RequestBody entity: $entityName): ResponseEntity<ApiResponse<$entityName>> {\n")
+        append("    val updatedEntity = service.update(id, entity)\n")
+        append("    return if (updatedEntity.success) {\n")
+        append("        ResponseEntity.ok(updatedEntity)\n")
+        append("    } else {\n")
+        append("        ResponseEntity.status(HttpStatus.NOT_FOUND).build()\n")
+        append("    }\n")
+        append("}\n")
+    }
+
+    val deleteById = buildString {
+        if (isSwaggerEnabled) {
+            append("@Operation(summary = \"Delete $entityName by ID\", description = \"Delete an existing $entityName by its ID\")\n")
+            append("@ApiResponses(\n")
+            append("    value = [\n")
+            append("        ApiResponse(\n")
+            append("            success = true, message = \"Successfully deleted\",\n")
+            append("            content = [Content(schema = Schema(implementation = ApiResponse::class))],\n")
+            append("        ),\n")
+            append("        ApiResponse(success = false, message = \"$entityName not found\"),\n")
+            append("    ]\n")
+            append(")\n")
+        }
+        append("@DeleteMapping(\"/{id}\")\n")
+        append("fun deleteById(@PathVariable id: Long): ResponseEntity<ApiResponse<Unit>> {\n")
+        append("    val deleted = service.deleteById(id)\n")
+        append("    return if (deleted.success) {\n")
+        append("        ResponseEntity.noContent().build()\n")
+        append("    } else {\n")
+        append("        ResponseEntity.status(HttpStatus.NOT_FOUND).build()\n")
+        append("    }\n")
+        append("}\n")
+    }
     return """
 package $packageName.controller
 
@@ -34,95 +156,15 @@ $imports
 $annotations
 class $controllerName(private val service: $serviceName) {
 
-    @Operation(summary = "Get all $entityName", description = "Retrieve a list of all $entityName")
-    @ApiResponses(
-        value = [
-            ApiResponse(responseCode = "200", description = "Successfully retrieved list"),
-            ApiResponse(responseCode = "500", description = "Internal server error")
-        ]
-    )
-    @GetMapping
-    fun getAll(): ResponseEntity<List<$entityName>> {
-        val entities = service.getAll()
-        return if (entities.success) {
-            ResponseEntity.noContent().build()
-        } else {
-            ResponseEntity.ok(entities)
-        }
-    }
+    $getAll
 
-    @Operation(summary = "Get $entityName by ID", description = "Retrieve a single $entityName by its ID")
-    @ApiResponses(
-        value = [
-            ApiResponse(responseCode = "200", description = "Successfully retrieved"),
-            ApiResponse(responseCode = "404", description = "$entityName not found"),
-            ApiResponse(responseCode = "500", description = "Internal server error")
-        ]
-    )
-    @GetMapping("/{id}")
-    fun getById(@PathVariable id: Long): ResponseEntity<$entityName> {
-        val entity = service.findById(id)
-        return if (entity.success) {
-            ResponseEntity.ok(entity)
-        } else {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).build()
-        }
-    }
+    $getById
 
-    @Operation(summary = "Create new $entityName", description = "Create a new $entityName")
-    @ApiResponses(
-        value = [
-            ApiResponse(responseCode = "201", description = "Successfully created"),
-            ApiResponse(responseCode = "400", description = "Invalid input"),
-            ApiResponse(responseCode = "500", description = "Internal server error")
-        ]
-    )
-    @PostMapping
-    fun create(@RequestBody entity: $entityName): ResponseEntity<$entityName> {
-        val createdEntity = service.save(entity)
-        return if (createdEntity.success) {
-            ResponseEntity.status(HttpStatus.CREATED).body(createdEntity)
-        } else {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).build()
-        }
-    }
+    $create
 
-    @Operation(summary = "Update existing $entityName", description = "Update an existing $entityName by its ID")
-    @ApiResponses(
-        value = [
-            ApiResponse(responseCode = "200", description = "Successfully updated"),
-            ApiResponse(responseCode = "400", description = "Invalid input"),
-            ApiResponse(responseCode = "404", description = "$entityName not found"),
-            ApiResponse(responseCode = "500", description = "Internal server error")
-        ]
-    )
-    @PutMapping("/{id}")
-    fun update(@PathVariable id: Long, @RequestBody entity: $entityName): ResponseEntity<$entityName> {
-        val updatedEntity = service.update(id, entity)
-        return if (updatedEntity.success) {
-            ResponseEntity.ok(updatedEntity)
-        } else {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).build()
-        }
-    }
+    $update
 
-    @Operation(summary = "Delete $entityName", description = "Delete an existing $entityName by its ID")
-    @ApiResponses(
-        value = [
-            ApiResponse(responseCode = "204", description = "Successfully deleted"),
-            ApiResponse(responseCode = "404", description = "$entityName not found"),
-            ApiResponse(responseCode = "500", description = "Internal server error")
-        ]
-    )
-    @DeleteMapping("/{id}")
-    fun deleteById(@PathVariable id: Long): ResponseEntity<Unit> {
-        val deleted = service.deleteById(id)
-        return if (deleted.success) {
-            ResponseEntity.noContent().build()
-        } else {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).build()
-        }
-    }
+    $deleteById
 }
 """.trimIndent()
 }
