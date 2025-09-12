@@ -4,31 +4,31 @@ fun getEntityContent(
     packageName: String,
     entityName: String,
     endpoint: String,
-) = """
-package $packageName.entity
-
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.Table
-import java.time.LocalDateTime
-
-@Entity
-@Table(name = "$endpoint")
-data class $entityName(
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
-
-    @Column(name = "name")
-    val name: String = "",
-
-    @Column(name = "created_at")
-    val createdAt: LocalDateTime = LocalDateTime.now(),
-
-    @Column(name = "updated_at")
-    val updatedAt: LocalDateTime = LocalDateTime.now()
-)
-""".trimIndent()
+) = buildString {
+    appendLine("package $packageName.entity")
+    appendLine()
+    appendLine("import jakarta.persistence.Column")
+    appendLine("import jakarta.persistence.Entity")
+    appendLine("import jakarta.persistence.GeneratedValue")
+    appendLine("import jakarta.persistence.GenerationType")
+    appendLine("import jakarta.persistence.Id")
+    appendLine("import jakarta.persistence.Table")
+    appendLine("import java.time.LocalDateTime")
+    appendLine()
+    appendLine("@Entity")
+    appendLine("@Table(name = \"$endpoint\")")
+    appendLine("data class $entityName(")
+    appendLine("    @Id")
+    appendLine("    @GeneratedValue(strategy = GenerationType.IDENTITY)")
+    appendLine("    val id: Long = 0,")
+    appendLine()
+    appendLine("    @Column(name = \"name\")")
+    appendLine("    val name: String = \"\",")
+    appendLine()
+    appendLine("    @Column(name = \"created_at\")")
+    appendLine("    val createdAt: LocalDateTime = LocalDateTime.now(),")
+    appendLine()
+    appendLine("    @Column(name = \"updated_at\")")
+    appendLine("    val updatedAt: LocalDateTime = LocalDateTime.now()")
+    appendLine(")")
+}

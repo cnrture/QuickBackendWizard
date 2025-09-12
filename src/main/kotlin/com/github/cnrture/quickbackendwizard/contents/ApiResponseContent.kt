@@ -5,28 +5,32 @@ fun getApiResponseContent(
     isSwaggerEnabled: Boolean,
 ): String {
     return buildString {
-        append("package $packageName.common\n\n")
+        appendLine("package $packageName.common")
+        appendLine()
         if (isSwaggerEnabled) {
-            append("import io.swagger.v3.oas.annotations.media.Schema\n\n")
-            append("@Schema(description = \"Standard API response wrapper\")\n")
+            appendLine("import io.swagger.v3.oas.annotations.media.Schema")
+            appendLine()
+            appendLine("@Schema(description = \"Standard API response wrapper\")")
         }
-        append("data class ApiResponse<T>(\n")
+        appendLine("data class ApiResponse<T>(")
         if (isSwaggerEnabled) {
-            append("    @Schema(description = \"Success status\", example = \"true\")\n")
-            append("    val success: Boolean,\n\n")
+            appendLine("    @Schema(description = \"Success status\", example = \"true\")")
+            appendLine("    val success: Boolean,")
+            appendLine()
         } else {
-            append("    val success: Boolean,\n")
+            appendLine("    val success: Boolean,")
         }
         if (isSwaggerEnabled) {
-            append("    @Schema(description = \"Response message\", example = \"Operation completed successfully\")\n")
-            append("    val message: String,\n\n")
+            appendLine("    @Schema(description = \"Response message\", example = \"Operation completed successfully\")")
+            appendLine("    val message: String,")
+            appendLine()
         } else {
-            append("    val message: String,\n")
+            appendLine("    val message: String,")
         }
         if (isSwaggerEnabled) {
-            append("    @Schema(description = \"Response data\")\n")
+            appendLine("    @Schema(description = \"Response data\")")
         }
-        append("    val data: T? = null,\n")
-        append(")\n")
+        appendLine("    val data: T? = null,")
+        appendLine(")")
     }
 }

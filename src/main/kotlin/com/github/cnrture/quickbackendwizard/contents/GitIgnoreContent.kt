@@ -1,75 +1,75 @@
 package com.github.cnrture.quickbackendwizard.contents
 
-fun getGitIgnoreContent() = """
-HELP.md
-.gradle
-build/
-!gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
-
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-out/
-!**/src/main/**/out/
-!**/src/test/**/out/
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-
-### VS Code ###
-.vscode/
-
-### Kotlin ###
-.kotlin
-
-### Gradle ###
-/gradle.properties
-
-### Firebase ###
-/src/main/resources/firebase-service-account.json
-
-### Environment and Security Files ###
-.env
-.env.local
-.env.production
-.env.staging
-load-env.sh
-*.key
-*.pem
-*.p12
-*.jks
-*.keystore
-
-### Database Backups ###
-database_backups/
-*.sql
-*.sql.gz
-
-### Deployment Scripts (if they contain sensitive data) ###
-deploy-config.sh
-
-### Application Logs ###
-*.log
-logs/
-app.log
-""".trimIndent()
+fun getGitIgnoreContent() = buildString {
+    appendLine("HELP.md")
+    appendLine(".gradle")
+    appendLine("build/")
+    appendLine("!gradle/wrapper/gradle-wrapper.jar")
+    appendLine("!**/src/main/**/build/")
+    appendLine("!**/src/test/**/build/")
+    appendLine()
+    appendLine("### STS ###")
+    appendLine(".apt_generated")
+    appendLine(".classpath")
+    appendLine(".factorypath")
+    appendLine(".project")
+    appendLine(".settings")
+    appendLine(".springBeans")
+    appendLine(".sts4-cache")
+    appendLine("bin/")
+    appendLine("!**/src/main/**/bin/")
+    appendLine("!**/src/test/**/bin/")
+    appendLine()
+    appendLine("### IntelliJ IDEA ###")
+    appendLine(".idea")
+    appendLine("*.iws")
+    appendLine("*.iml")
+    appendLine("*.ipr")
+    appendLine("out/")
+    appendLine("!**/src/main/**/out/")
+    appendLine("!**/src/test/**/out/")
+    appendLine()
+    appendLine("### NetBeans ###")
+    appendLine("/nbproject/private/")
+    appendLine("/nbbuild/")
+    appendLine("/dist/")
+    appendLine("/nbdist/")
+    appendLine("/.nb-gradle/")
+    appendLine()
+    appendLine("### VS Code ###")
+    appendLine(".vscode/")
+    appendLine()
+    appendLine("### Kotlin ###")
+    appendLine(".kotlin")
+    appendLine()
+    appendLine("### Gradle ###")
+    appendLine("/gradle.properties")
+    appendLine()
+    appendLine("### Firebase ###")
+    appendLine("/src/main/resources/firebase-service-account.json")
+    appendLine()
+    appendLine("### Environment and Security Files ###")
+    appendLine(".env")
+    appendLine(".env.local")
+    appendLine(".env.production")
+    appendLine(".env.staging")
+    appendLine("load-env.sh")
+    appendLine("*.key")
+    appendLine("*.pem")
+    appendLine("*.p12")
+    appendLine("*.jks")
+    appendLine("*.keystore")
+    appendLine()
+    appendLine("### Database Backups ###")
+    appendLine("database_backups/")
+    appendLine("*.sql")
+    appendLine("*.sql.gz")
+    appendLine()
+    appendLine("### Deployment Scripts (if they contain sensitive data) ###")
+    appendLine("deploy-config.sh")
+    appendLine()
+    appendLine("### Application Logs ###")
+    appendLine("*.log")
+    appendLine("logs/")
+    appendLine("app.log")
+}

@@ -131,38 +131,41 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
 
     private fun createBuildGradle(root: VirtualFile) {
         val dependencies = StringBuilder().apply {
-            append("implementation(\"org.springframework.boot:spring-boot-starter\")")
+            appendLine("implementation(\"org.springframework.boot:spring-boot-starter\")")
             if (selectedDependencies.contains(DependencyType.SPRING_WEB)) {
-                append("\n    implementation(\"org.springframework.boot:spring-boot-starter-web\")")
+                appendLine("    implementation(\"org.springframework.boot:spring-boot-starter-web\")")
             }
             if (selectedDependencies.contains(DependencyType.SPRING_DATA_JPA)) {
-                append("\n    implementation(\"org.springframework.boot:spring-boot-starter-data-jpa\")")
+                appendLine("    implementation(\"org.springframework.boot:spring-boot-starter-data-jpa\")")
             }
             if (selectedDependencies.contains(DependencyType.SPRING_SECURITY)) {
-                append("\n    implementation(\"org.springframework.boot:spring-boot-starter-security\")")
+                appendLine("    implementation(\"org.springframework.boot:spring-boot-starter-security\")")
             }
             if (selectedDependencies.contains(DependencyType.VALIDATION)) {
-                append("\n    implementation(\"org.springframework.boot:spring-boot-starter-validation\")")
+                appendLine("    implementation(\"org.springframework.boot:spring-boot-starter-validation\")")
             }
-            append("\n    implementation(\"org.jetbrains.kotlin:kotlin-reflect\")")
-            append("\n    implementation(\"me.paulschwarz:spring-dotenv:4.0.0\")")
-            append("\n\n    // Database drivers")
+            appendLine("    implementation(\"org.jetbrains.kotlin:kotlin-reflect\")")
+            appendLine("    implementation(\"me.paulschwarz:spring-dotenv:4.0.0\")")
+            appendLine()
+            appendLine("    // Database drivers")
             when (selectedDatabase) {
-                "h2" -> append("\n    implementation(\"com.h2database:h2\")")
-                "mysql" -> append("\n    implementation(\"mysql:mysql-connector-java:8.0.33\")")
-                "mariadb" -> append("\n    implementation(\"org.mariadb.jdbc:mariadb-java-client:3.1.4\")")
-                "postgresql" -> append("\n    implementation(\"org.postgresql:postgresql:42.6.0\")")
+                "h2" -> appendLine("    implementation(\"com.h2database:h2\")")
+                "mysql" -> appendLine("    implementation(\"mysql:mysql-connector-java:8.0.33\")")
+                "mariadb" -> appendLine("    implementation(\"org.mariadb.jdbc:mariadb-java-client:3.1.4\")")
+                "postgresql" -> appendLine("    implementation(\"org.postgresql:postgresql:42.6.0\")")
             }
             if (selectedDependencies.contains(DependencyType.SWAGGER)) {
-                append("\n    \n    // Swagger/OpenAPI Documentation")
-                append("\n    implementation(\"org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0\")")
+                appendLine()
+                appendLine("    // Swagger/OpenAPI Documentation")
+                appendLine("    implementation(\"org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0\")")
             }
-            append("\n\n    // Testing")
-            append("\n    testImplementation(\"org.springframework.boot:spring-boot-starter-test\")")
-            append("\n    testImplementation(\"org.jetbrains.kotlin:kotlin-test-junit5\")")
-            append("\n    testImplementation(\"io.mockk:mockk:1.13.8\")")
-            append("\n    testImplementation(\"io.mockk:mockk-jvm:1.13.8\")")
-            append("\n    testRuntimeOnly(\"org.junit.platform:junit-platform-launcher\")")
+            appendLine()
+            appendLine("    // Testing")
+            appendLine("    testImplementation(\"org.springframework.boot:spring-boot-starter-test\")")
+            appendLine("    testImplementation(\"org.jetbrains.kotlin:kotlin-test-junit5\")")
+            appendLine("    testImplementation(\"io.mockk:mockk:1.13.8\")")
+            appendLine("    testImplementation(\"io.mockk:mockk-jvm:1.13.8\")")
+            appendLine("    testRuntimeOnly(\"org.junit.platform:junit-platform-launcher\")")
         }.toString()
 
         val content = getGradleContent(groupId, version, dependencies, isAddGradleTasks)

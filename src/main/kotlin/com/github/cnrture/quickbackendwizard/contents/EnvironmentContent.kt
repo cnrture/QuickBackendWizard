@@ -4,19 +4,19 @@ fun getEnvironmentContent(
     dbName: String,
     dbUsername: String,
     dbPassword: String,
-) = """
-# Application Environment Configuration
-# This file contains environment-specific settings for the application.
-
-# Database Configuration
-DB_PASSWORD=$dbPassword
-DB_HOST=localhost
-DB_PORT=3306
-DB_NAME=$dbName
-DB_USERNAME=$dbUsername
-
-ALLOWED_ORIGINS=*
-ALLOWED_METHODS=GET,POST,PUT,DELETE,OPTIONS,PATCH
-ALLOWED_HEADERS=Authorization,Content-Type,Accept,Origin,User-Agent,DNT,Cache-Control,X-Mx-ReqToken,Keep-Alive,X-Requested-With,If-Modified-Since
-CORS_MAX_AGE=3600
-""".trimIndent()
+) = buildString {
+    appendLine("# Application Environment Configuration")
+    appendLine("# This file contains environment-specific settings for the application.")
+    appendLine()
+    appendLine("# Database Configuration")
+    appendLine("DB_PASSWORD=$dbPassword")
+    appendLine("DB_HOST=localhost")
+    appendLine("DB_PORT=3306")
+    appendLine("DB_NAME=$dbName")
+    appendLine("DB_USERNAME=$dbUsername")
+    appendLine()
+    appendLine("ALLOWED_ORIGINS=*")
+    appendLine("ALLOWED_METHODS=GET,POST,PUT,DELETE,OPTIONS,PATCH")
+    appendLine("ALLOWED_HEADERS=Authorization,Content-Type,Accept,Origin,User-Agent,DNT,Cache-Control,X-Mx-ReqToken,Keep-Alive,X-Requested-With,If-Modified-Since")
+    appendLine("CORS_MAX_AGE=3600")
+}

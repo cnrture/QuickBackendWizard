@@ -5,105 +5,130 @@ fun getServiceContent(
     entityName: String,
     serviceName: String,
     repositoryName: String,
-) = """
-package $packageName.service
-
-import $packageName.entity.$entityName
-import $packageName.repository.$repositoryName
-import org.springframework.stereotype.Service
-
-@Service
-class $serviceName(private val repository: $repositoryName) {
-
-    fun getAll(): ApiResponse<List<$entityName>> {
-        try {
-            val entities = repository.findAll()
-            return ApiResponse(
-                success = true,
-                message = "Successfully fetched $entityName list",
-                data = entities,
-            )
-        } catch (e: Exception) {
-            return ApiResponse(
-                success = false,
-                message = "Error fetching $entityName list: ${'$'}{e.message}",
-                data = emptyList(),
-            )
-        }
+): String {
+    val imports = buildString {
+        appendLine("import $packageName.common.ApiResponse")
+        appendLine("import $packageName.entity.$entityName")
+        appendLine("import $packageName.repository.$repositoryName")
+        appendLine("import org.springframework.stereotype.Service")
     }
-
-    fun getById(id: Long): ApiResponse<$entityName> {
-        try {
-            val entity = repository.findById(id).orElseThrow { 
-                NoSuchElementException("$entityName not found with id: ${'$'}id") 
-            }
-            return ApiResponse(
-                success = true,
-                message = "Successfully fetched $entityName",
-                data = entity,
-            )
-        } catch (e: NoSuchElementException) {
-            return ApiResponse(
-                success = false,
-                message = e.message ?: "No such element",
-                data = null,
-            )
-        } catch (e: Exception) {
-            return ApiResponse(
-                success = false,
-                message = "Error fetching $entityName: ${'$'}{e.message}",
-                data = null,
-            )
-        }
+    val getAll = buildString {
+        appendLine("    fun getAll(): ApiResponse<List<$entityName>> {")
+        appendLine("        try {")
+        appendLine("            val entities = repository.findAll()")
+        appendLine("            return ApiResponse(")
+        appendLine("                success = true,")
+        appendLine("                message = \"Successfully fetched $entityName list\",")
+        appendLine("                data = entities,")
+        appendLine("            )")
+        appendLine("        } catch (e: Exception) {")
+        appendLine("            return ApiResponse(")
+        appendLine("                success = false,")
+        appendLine("                message = \"Error fetching $entityName list: \${e.message}\",")
+        appendLine("                data = emptyList(),")
+        appendLine("            )")
+        appendLine("        }")
+        appendLine("    }")
+        appendLine()
     }
-
-    fun create(entity: $entityName): ApiResponse<$entityName> {
-        return try {
-            val savedEntity = repository.save(entity)
-            ApiResponse(
-                success = true,
-                message = "$entityName created successfully",
-                data = savedEntity,
-            )
-        } catch (e: Exception) {
-            ApiResponse(
-                success = false,
-                message = "Error creating $entityName: ${'$'}{e.message}",
-                data = null,
-            )
-        }
+    val getById = buildString {
+        appendLine("    fun getById(id: Long): ApiResponse<$entityName> {")
+        appendLine("        try {")
+        appendLine("            val entity = repository.findById(id).orElseThrow { ")
+        appendLine("                NoSuchElementException(\"$entityName not found with id: \${id}\") ")
+        appendLine("            }")
+        appendLine("            return ApiResponse(")
+        appendLine("                success = true,")
+        appendLine("                message = \"Successfully fetched $entityName\",")
+        appendLine("                data = entity,")
+        appendLine("            )")
+        appendLine("        } catch (e: NoSuchElementException) {")
+        appendLine("            return ApiResponse(")
+        appendLine("                success = false,")
+        appendLine("                message = e.message ?: \"No such element\",")
+        appendLine("                data = null,")
+        appendLine("            )")
+        appendLine("        } catch (e: Exception) {")
+        appendLine("            return ApiResponse(")
+        appendLine("                success = false,")
+        appendLine("                message = \"Error fetching $entityName: \${e.message}\",")
+        appendLine("                data = null,")
+        appendLine("            )")
+        appendLine("        }")
+        appendLine("    }")
+        appendLine()
     }
-
-    fun update(id: Long, entity: $entityName): ApiResponse<$entityName> {
-        return try {
-            if (!repository.existsById(id)) {
-                return ApiResponse(
-                    success = false,
-                    message = "$entityName not found with id: ${'$'}id",
-                    data = null,
-                )
-            }
-            val updatedEntity = repository.save(entity.copy(id = id))
-            ApiResponse(
-                success = true,
-                message = "$entityName updated successfully",
-                data = updatedEntity,
-            )
-        } catch (e: Exception) {
-            ApiResponse(
-                success = false,
-                message = "Error updating $entityName: ${'$'}{e.message}",
-                data = null,
-            )
-        }
+    val create = buildString {
+        appendLine("    fun create(entity: $entityName): ApiResponse<$entityName> {")
+        appendLine("        return try {")
+        appendLine("            val savedEntity = repository.save(entity)")
+        appendLine("            ApiResponse(")
+        appendLine("                success = true,")
+        appendLine("                message = \"$entityName created successfully\",")
+        appendLine("                data = savedEntity,")
+        appendLine("            )")
+        appendLine("        } catch (e: Exception) {")
+        appendLine("            ApiResponse(")
+        appendLine("                success = false,")
+        appendLine("                message = \"Error creating $entityName: \${e.message}\",")
+        appendLine("                data = null,")
+        appendLine("            )")
+        appendLine("        }")
+        appendLine("    }")
+        appendLine()
     }
-
-    fun deleteById(id: Long) {
-        if (repository.existsById(id)) {
-            repository.deleteById(id)
-        } else {
-            throw NoSuchElementException("$entityName not found with id: ${'$'}id")
-        }
+    val update = buildString {
+        appendLine("    fun update(id: Long, entity: $entityName): ApiResponse<$entityName> {")
+        appendLine("        return try {")
+        appendLine("            if (!repository.existsById(id)) {")
+        appendLine("                return ApiResponse(")
+        appendLine("                    success = false,")
+        appendLine("                    message = \"$entityName not found with id: \${id}\",")
+        appendLine("                    data = null,")
+        appendLine("                )")
+        appendLine("            }")
+        appendLine("            val updatedEntity = repository.save(entity.copy(id = id))")
+        appendLine("            ApiResponse(")
+        appendLine("                success = true,")
+        appendLine("                message = \"$entityName updated successfully\",")
+        appendLine("                data = updatedEntity,")
+        appendLine("            )")
+        appendLine("        } catch (e: Exception) {")
+        appendLine("            ApiResponse(")
+        appendLine("                success = false,")
+        appendLine("                message = \"Error updating $entityName: \${e.message}\",")
+        appendLine("                data = null,")
+        appendLine("            )")
+        appendLine("        }")
+        appendLine("    }")
+        appendLine()
+    }
+    val deleteById = buildString {
+        appendLine("    fun deleteById(id: Long) {")
+        appendLine("        if (repository.existsById(id)) {")
+        appendLine("            repository.deleteById(id)")
+        appendLine("        } else {")
+        appendLine("            throw NoSuchElementException(\"$entityName not found with id: \${id}\")")
+        appendLine("        }")
+        appendLine("    }")
+    }
+    return buildString {
+        appendLine("package $packageName.service")
+        appendLine()
+        appendLine(imports)
+        appendLine()
+        appendLine("@Service")
+        appendLine("class $serviceName(private val repository: $repositoryName) {")
+        appendLine()
+        append(getAll)
+        appendLine()
+        append(getById)
+        appendLine()
+        append(create)
+        appendLine()
+        append(update)
+        appendLine()
+        append(deleteById)
+        appendLine("}")
     }
 }
-""".trimIndent()
