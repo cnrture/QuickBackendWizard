@@ -23,12 +23,9 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
     var groupId: String = "com.example"
     var version: String = "0.0.1-SNAPSHOT"
 
-    var includeSpringWeb: Boolean = false
-    var includeSpringDataJpa: Boolean = false
-    var includeSpringSecurity: Boolean = false
-    var includeValidation: Boolean = false
     var isAddGradleTasks: Boolean = false
     var selectedDatabase: String = DatabaseType.MYSQL.type
+    var selectedDependencies: List<DependencyType> = emptyList()
     var dbName: String = ""
     var dbUsername: String = ""
     var dbPassword: String = ""
@@ -121,7 +118,7 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         createReadmeFile(root)
         createDatabaseFiles(root)
         createEnvFile(root, dbName, dbUsername, dbPassword)
-        if (includeSpringWeb) createWebConfigFile(root)
+        if (selectedDependencies.contains(DependencyType.SPRING_WEB)) createWebConfigFile(root)
         endpoints.forEach { endpoint ->
             createEntityFile(root, endpoint)
             createRepositoryFile(root, endpoint)
@@ -133,16 +130,16 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
     private fun createBuildGradle(root: VirtualFile) {
         val dependencies = StringBuilder().apply {
             append("implementation(\"org.springframework.boot:spring-boot-starter\")")
-            if (includeSpringWeb) {
+            if (selectedDependencies.contains(DependencyType.SPRING_WEB)) {
                 append("\n    implementation(\"org.springframework.boot:spring-boot-starter-web\")")
             }
-            if (includeSpringDataJpa) {
+            if (selectedDependencies.contains(DependencyType.SPRING_DATA_JPA)) {
                 append("\n    implementation(\"org.springframework.boot:spring-boot-starter-data-jpa\")")
             }
-            if (includeSpringSecurity) {
+            if (selectedDependencies.contains(DependencyType.SPRING_SECURITY)) {
                 append("\n    implementation(\"org.springframework.boot:spring-boot-starter-security\")")
             }
-            if (includeValidation) {
+            if (selectedDependencies.contains(DependencyType.VALIDATION)) {
                 append("\n    implementation(\"org.springframework.boot:spring-boot-starter-validation\")")
             }
             append("\n    implementation(\"org.jetbrains.kotlin:kotlin-reflect\")")
@@ -153,6 +150,10 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
                 "mysql" -> append("\n    implementation(\"mysql:mysql-connector-java:8.0.33\")")
                 "mariadb" -> append("\n    implementation(\"org.mariadb.jdbc:mariadb-java-client:3.1.4\")")
                 "postgresql" -> append("\n    implementation(\"org.postgresql:postgresql:42.6.0\")")
+            }
+            if (selectedDependencies.contains(DependencyType.SWAGGER)) {
+                append("\n    \n    // Swagger/OpenAPI Documentation")
+                append("\n    implementation(\"org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0\")")
             }
             append("\n\n    // Testing")
             append("\n    testImplementation(\"org.springframework.boot:spring-boot-starter-test\")")

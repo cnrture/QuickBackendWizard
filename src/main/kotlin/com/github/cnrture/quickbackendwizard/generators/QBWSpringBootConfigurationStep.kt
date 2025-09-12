@@ -8,7 +8,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposePanel
 import androidx.compose.ui.graphics.Brush
@@ -32,6 +32,7 @@ class QBWSpringBootConfigurationStep(private val moduleBuilder: QBWSpringBootMod
             setContent {
                 QBWTheme {
                     val pages = listOf("Project Info", "Dependencies", "Database", "Endpoints")
+                    var selectedDependencies by remember { mutableStateOf(moduleBuilder.selectedDependencies.toSet()) }
                     val state = rememberPagerState(initialPage = 0) { 4 }
                     val scope = rememberCoroutineScope()
                     Column(
@@ -85,7 +86,19 @@ class QBWSpringBootConfigurationStep(private val moduleBuilder: QBWSpringBootMod
                         ) {
                             when (it) {
                                 0 -> ProjectInfoContent(moduleBuilder)
-                                1 -> DependenciesContent(moduleBuilder)
+                                1 -> DependenciesContent(
+                                    moduleBuilder = moduleBuilder,
+                                    selectedDependencies = selectedDependencies.toList(),
+                                    onDependencyChange = { dependency, isSelected ->
+                                        selectedDependencies = if (isSelected) {
+                                            selectedDependencies + dependency
+                                        } else {
+                                            selectedDependencies - dependency
+                                        }
+                                        moduleBuilder.selectedDependencies = selectedDependencies.toList()
+                                    },
+                                )
+
                                 2 -> DatabasesContent(moduleBuilder)
                                 else -> EndpointsContent(moduleBuilder)
                             }

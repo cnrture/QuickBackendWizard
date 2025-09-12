@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -18,12 +18,11 @@ import com.github.cnrture.quickbackendwizard.components.QBWText
 import com.github.cnrture.quickbackendwizard.theme.QBWTheme
 
 @Composable
-fun DependenciesContent(moduleBuilder: QBWSpringBootModuleBuilder) {
-    var isSpringWebSelected by remember { mutableStateOf(false) }
-    var isSpringDataJpaSelected by remember { mutableStateOf(false) }
-    var isSpringSecuritySelected by remember { mutableStateOf(false) }
-    var isValidationSelected by remember { mutableStateOf(false) }
-
+fun DependenciesContent(
+    moduleBuilder: QBWSpringBootModuleBuilder,
+    selectedDependencies: List<DependencyType>,
+    onDependencyChange: (DependencyType, Boolean) -> Unit,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -48,41 +47,21 @@ fun DependenciesContent(moduleBuilder: QBWSpringBootModuleBuilder) {
             modifier = Modifier.padding(vertical = 8.dp),
             color = QBWTheme.colors.lightGray,
         )
-        QBWCheckbox(
-            checked = isSpringWebSelected,
-            label = "Spring Web",
-            description = "Includes Spring MVC and embedded Tomcat server.",
-            onCheckedChange = {
-                isSpringWebSelected = it
-                moduleBuilder.includeSpringWeb = it
-            },
-        )
-        QBWCheckbox(
-            checked = isSpringDataJpaSelected,
-            label = "Spring Data JPA",
-            description = "Provides integration with JPA for database access.",
-            onCheckedChange = {
-                isSpringDataJpaSelected = it
-                moduleBuilder.includeSpringDataJpa = it
-            },
-        )
-        QBWCheckbox(
-            checked = isSpringSecuritySelected,
-            label = "Spring Security",
-            description = "Adds authentication and authorization support.",
-            onCheckedChange = {
-                isSpringSecuritySelected = it
-                moduleBuilder.includeSpringSecurity = it
-            },
-        )
-        QBWCheckbox(
-            checked = isValidationSelected,
-            label = "Validation",
-            description = "Enables bean validation using Hibernate Validator.",
-            onCheckedChange = {
-                isValidationSelected = it
-                moduleBuilder.includeValidation = it
-            },
-        )
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            DependencyType.ALL.forEach { dependency ->
+                val selected = selectedDependencies.contains(dependency)
+                QBWCheckbox(
+                    checked = selected,
+                    label = dependency.name,
+                    description = dependency.description,
+                    onCheckedChange = {
+                        onDependencyChange(dependency, it)
+                        moduleBuilder.selectedDependencies = selectedDependencies
+                    },
+                )
+            }
+        }
     }
 }
