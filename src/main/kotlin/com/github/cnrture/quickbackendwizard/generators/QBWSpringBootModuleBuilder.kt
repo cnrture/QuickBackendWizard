@@ -119,6 +119,7 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         createDatabaseFiles(root)
         createEnvFile(root, dbName, dbUsername, dbPassword)
         if (selectedDependencies.contains(DependencyType.SPRING_WEB)) createWebConfigFile(root)
+        if (selectedDependencies.contains(DependencyType.SWAGGER)) createSwaggerConfigFile(root)
         endpoints.forEach { endpoint ->
             createEntityFile(root, endpoint)
             createRepositoryFile(root, endpoint)
@@ -339,6 +340,22 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
     private fun createReadmeFile(root: VirtualFile) {
         val content = getReadmeContent(projectName, selectedDatabase, endpoints)
         createFile(root, "README.md", content)
+    }
+
+    private fun createSwaggerConfigFile(root: VirtualFile) {
+        if (selectedDependencies.contains(DependencyType.SWAGGER)) {
+            val packageParts = packageName.split(".")
+            var srcKotlinDir = root.findChild("src")
+                ?.findChild("main")
+                ?.findChild("kotlin")
+
+            packageParts.forEach { srcKotlinDir = srcKotlinDir?.findChild(it) }
+
+            val configDir = srcKotlinDir?.findChild("config") ?: srcKotlinDir?.createChildDirectory(this, "config")
+            val content = getSwaggerContent(projectName.uppercase(), packageName, version)
+
+            configDir?.let { createFile(it, "SwaggerConfig.kt", content) }
+        }
     }
 
     override fun createWizardSteps(
