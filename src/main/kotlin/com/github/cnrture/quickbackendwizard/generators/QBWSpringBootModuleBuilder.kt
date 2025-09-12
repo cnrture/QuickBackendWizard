@@ -27,7 +27,7 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
     var includeSpringSecurity: Boolean = false
     var includeValidation: Boolean = false
     var isAddGradleTasks: Boolean = false
-    var selectedDatabase: String = DatabaseType.ALL.first().type
+    var selectedDatabase: String = ""
     var dbName: String = ""
     var dbUsername: String = ""
     var dbPassword: String = ""
@@ -114,7 +114,12 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         createMainApplicationFile(root)
         createGitIgnore(root)
         createApplicationProperties(root)
-        createDatabaseFiles(root)
+        createWebConfigFile(root)
+
+        if (selectedDatabase.isNotEmpty()) {
+            createDatabaseFiles(root)
+            createEnvFile(root, dbName, dbUsername, dbPassword)
+        }
 
         endpoints.forEach { endpoint ->
             createEntityFile(root, endpoint)
@@ -316,6 +321,25 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         val content = getControllerContent(packageName, entityName, controllerName, serviceName, endpoint)
 
         controllerDir?.let { createFile(it, "$controllerName.kt", content) }
+    }
+
+    private fun createEnvFile(root: VirtualFile, dbName: String, dbUsername: String, dbPassword: String) {
+        val content = getEnvironmentContent(dbName, dbUsername, dbPassword)
+        createFile(root, ".env", content)
+    }
+
+    private fun createWebConfigFile(root: VirtualFile) {
+        val packageParts = packageName.split(".")
+        var srcKotlinDir = root.findChild("src")
+            ?.findChild("main")
+            ?.findChild("kotlin")
+
+        packageParts.forEach { srcKotlinDir = srcKotlinDir?.findChild(it) }
+
+        val configDir = srcKotlinDir?.findChild("config") ?: srcKotlinDir?.createChildDirectory(this, "config")
+        val content = getWebConfigContent(packageName)
+
+        configDir?.let { createFile(it, "WebConfig.kt", content) }
     }
 
     override fun createWizardSteps(

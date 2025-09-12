@@ -52,8 +52,8 @@ fun DatabasesContent(moduleBuilder: QBWSpringBootModuleBuilder) {
                 onCheckedChange = {
                     isDatabaseEnabled = it
                     if (!it) {
-                        selectedDatabase = DatabaseType.ALL.first().type
-                        moduleBuilder.selectedDatabase = DatabaseType.ALL.first().type
+                        selectedDatabase = ""
+                        moduleBuilder.selectedDatabase = ""
                     }
                 },
                 colors = SwitchDefaults.colors(
