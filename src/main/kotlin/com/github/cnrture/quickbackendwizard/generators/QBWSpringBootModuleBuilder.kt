@@ -118,6 +118,7 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         createReadmeFile(root)
         createDatabaseFiles(root)
         createEnvFile(root, dbName, dbUsername, dbPassword)
+        createApiResponseFile(root)
         if (selectedDependencies.contains(DependencyType.SPRING_WEB)) createWebConfigFile(root)
         if (selectedDependencies.contains(DependencyType.SWAGGER)) createSwaggerConfigFile(root)
         endpoints.forEach { endpoint ->
@@ -363,6 +364,20 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
 
             configDir?.let { createFile(it, "SwaggerConfig.kt", content) }
         }
+    }
+
+    private fun createApiResponseFile(root: VirtualFile) {
+        val packageParts = packageName.split(".")
+        var srcKotlinDir = root.findChild("src")
+            ?.findChild("main")
+            ?.findChild("kotlin")
+
+        packageParts.forEach { srcKotlinDir = srcKotlinDir?.findChild(it) }
+
+        val commonDir = srcKotlinDir?.findChild("common") ?: srcKotlinDir?.createChildDirectory(this, "common")
+        val content = getApiResponseContent(packageName, selectedDependencies.contains(DependencyType.SWAGGER))
+
+        commonDir?.let { createFile(it, "ApiResponse.kt", content) }
     }
 
     override fun createWizardSteps(
