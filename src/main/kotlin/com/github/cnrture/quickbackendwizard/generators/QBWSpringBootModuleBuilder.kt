@@ -13,7 +13,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModifiableRootModel
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider
 import com.intellij.openapi.vfs.VirtualFile
-import fleet.kernel.db
 import java.io.IOException
 
 class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
