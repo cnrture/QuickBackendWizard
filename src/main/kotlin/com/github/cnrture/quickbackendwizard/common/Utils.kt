@@ -30,7 +30,7 @@ object Utils {
                 }
             }
         )
-        notification.icon = IconLoader.getIcon("/META-INF/pluginIcon.svg", this::class.java)
+        notification.icon = IconLoader.getIcon("/icons/pluginIcon.svg", this::class.java)
         notification.notify(null)
     }
 }

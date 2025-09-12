@@ -1,5 +1,6 @@
 package com.github.cnrture.quickbackendwizard.generators
 
+import com.github.cnrture.quickbackendwizard.common.Utils
 import com.github.cnrture.quickbackendwizard.contents.*
 import com.intellij.ide.util.projectWizard.JavaModuleBuilder
 import com.intellij.ide.util.projectWizard.ModuleWizardStep
@@ -73,9 +74,9 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
             val gradleSystemId = ProjectSystemId("GRADLE")
             ExternalSystemUtil.refreshProject(
                 projectRoot.path,
-                ImportSpecBuilder(project, gradleSystemId)
-                    .use(ProgressExecutionMode.IN_BACKGROUND_ASYNC)
+                ImportSpecBuilder(project, gradleSystemId).use(ProgressExecutionMode.START_IN_FOREGROUND_ASYNC)
             )
+            Utils.showInfo("Project Created", "Kotlin Spring Boot project '$projectName' has been created successfully.")
         } catch (e: Exception) {
             e.printStackTrace()
         }
