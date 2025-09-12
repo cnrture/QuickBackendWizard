@@ -76,7 +76,10 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
                 projectRoot.path,
                 ImportSpecBuilder(project, gradleSystemId).use(ProgressExecutionMode.START_IN_FOREGROUND_ASYNC)
             )
-            Utils.showInfo("Project Created", "Kotlin Spring Boot project '$projectName' has been created successfully.")
+            Utils.showInfo(
+                "Project Created",
+                "Kotlin Spring Boot project '$projectName' has been created successfully."
+            )
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -115,7 +118,7 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         createMainApplicationFile(root)
         createGitIgnore(root)
         createApplicationProperties(root)
-        createWebConfigFile(root)
+        if (includeSpringWeb) createWebConfigFile(root)
         createReadmeFile(root)
 
         createDatabaseFiles(root)
