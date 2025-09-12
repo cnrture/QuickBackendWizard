@@ -310,7 +310,14 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         val serviceName = "${entityName}Service"
         val controllerName = "${entityName}Controller"
 
-        val content = getControllerContent(packageName, entityName, controllerName, serviceName, endpoint)
+        val content = getControllerContent(
+            packageName = packageName,
+            entityName = entityName,
+            controllerName = controllerName,
+            serviceName = serviceName,
+            endpoint = endpoint,
+            isSwaggerEnabled = selectedDependencies.contains(DependencyType.SWAGGER),
+        )
 
         controllerDir?.let { createFile(it, "$controllerName.kt", content) }
     }
