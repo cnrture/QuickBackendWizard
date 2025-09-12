@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -16,13 +16,18 @@ import com.github.cnrture.quickbackendwizard.components.QBWTextField
 import com.github.cnrture.quickbackendwizard.theme.QBWTheme
 
 @Composable
-fun ProjectInfoContent(moduleBuilder: QBWSpringBootModuleBuilder) {
-    var projectName by remember { mutableStateOf(moduleBuilder.projectName) }
-    var groupId by remember { mutableStateOf(moduleBuilder.groupId) }
-    var packageName by remember { mutableStateOf(moduleBuilder.packageName) }
-    var version by remember { mutableStateOf(moduleBuilder.version) }
-    var isAddGradleTasks by remember { mutableStateOf(moduleBuilder.isAddGradleTasks) }
-
+fun ProjectInfoContent(
+    projectName: String,
+    groupId: String,
+    packageName: String,
+    version: String,
+    isAddGradleTasks: Boolean,
+    onProjectNameChange: (String) -> Unit,
+    onGroupIdChange: (String) -> Unit,
+    onPackageNameChange: (String) -> Unit,
+    onVersionChange: (String) -> Unit,
+    onAddGradleTasksChange: (Boolean) -> Unit,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -55,19 +60,13 @@ fun ProjectInfoContent(moduleBuilder: QBWSpringBootModuleBuilder) {
                 modifier = Modifier.weight(1f),
                 placeholder = "Project Name",
                 value = projectName,
-                onValueChange = {
-                    projectName = it
-                    moduleBuilder.projectName = it
-                },
+                onValueChange = { onProjectNameChange(it) },
             )
             InputArea(
                 modifier = Modifier.weight(1f),
                 placeholder = "Version",
                 value = version,
-                onValueChange = {
-                    version = it
-                    moduleBuilder.version = it
-                },
+                onValueChange = { onVersionChange(it) }
             )
         }
         Row(
@@ -78,29 +77,22 @@ fun ProjectInfoContent(moduleBuilder: QBWSpringBootModuleBuilder) {
                 modifier = Modifier.weight(1f),
                 placeholder = "Group",
                 value = groupId,
-                onValueChange = {
-                    groupId = it
-                    moduleBuilder.groupId = it
-                },
+                onValueChange = { onGroupIdChange(it) },
             )
             InputArea(
                 modifier = Modifier.weight(1f),
                 placeholder = "Package Name",
                 value = packageName,
-                onValueChange = {
-                    packageName = it
-                    moduleBuilder.packageName = it
-                },
+                prefix = groupId.ifEmpty { "com.example" },
+                onValueChange = { onPackageNameChange(it) }
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
         QBWCheckbox(
             checked = isAddGradleTasks,
             label = "Add Supporting Gradle Tasks",
-            onCheckedChange = {
-                isAddGradleTasks = it
-                moduleBuilder.isAddGradleTasks = it
-            },
+            description = "Include additional Gradle tasks for easier project management.",
+            onCheckedChange = { onAddGradleTasksChange(it) }
         )
     }
 }
@@ -110,6 +102,7 @@ private fun InputArea(
     modifier: Modifier = Modifier,
     placeholder: String,
     value: String,
+    prefix: String? = null,
     onValueChange: (String) -> Unit,
 ) {
     Column(
@@ -127,6 +120,7 @@ private fun InputArea(
             modifier = Modifier.fillMaxWidth(),
             placeholder = placeholder,
             value = value,
+            prefix = prefix,
             onValueChange = onValueChange,
         )
     }

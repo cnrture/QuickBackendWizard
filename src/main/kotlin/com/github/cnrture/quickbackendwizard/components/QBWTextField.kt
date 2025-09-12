@@ -2,6 +2,7 @@ package com.github.cnrture.quickbackendwizard.components
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,6 +29,7 @@ fun QBWTextField(
     textStyle: TextStyle = TextStyle.Default,
     isSingleLine: Boolean = true,
     isEnabled: Boolean = true,
+    prefix: String? = null,
 ) {
     BasicTextField(
         modifier = modifier
@@ -49,20 +51,44 @@ fun QBWTextField(
         cursorBrush = SolidColor(value = color),
         enabled = isEnabled,
         decorationBox = { innerTextField ->
-            Box(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                contentAlignment = Alignment.CenterStart,
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                if (value.isEmpty() && placeholder != null) {
-                    QBWText(
-                        text = placeholder,
-                        color = QBWTheme.colors.hintGray,
-                        style = textStyle.copy(
-                            fontSize = 14.sp,
-                        ),
-                    )
+                if (prefix != null) {
+                    Box(
+                        modifier = Modifier
+                            .padding(start = 16.dp)
+                            .align(Alignment.CenterVertically),
+                    ) {
+                        QBWText(
+                            text = "$prefix.",
+                            color = QBWTheme.colors.hintGray,
+                            style = textStyle.copy(
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium,
+                            ),
+                        )
+                    }
                 }
-                innerTextField()
+                Box(
+                    modifier = Modifier.padding(
+                        horizontal = if (prefix != null) 0.dp else 16.dp,
+                        vertical = 8.dp,
+                    ),
+                    contentAlignment = Alignment.CenterStart,
+                ) {
+                    if (value.isEmpty() && placeholder != null) {
+                        QBWText(
+                            text = placeholder,
+                            color = QBWTheme.colors.hintGray,
+                            style = textStyle.copy(
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium,
+                            ),
+                        )
+                    }
+                    innerTextField()
+                }
             }
         },
     )

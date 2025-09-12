@@ -32,6 +32,11 @@ class QBWSpringBootConfigurationStep(private val moduleBuilder: QBWSpringBootMod
             setContent {
                 QBWTheme {
                     val pages = listOf("Project Info", "Dependencies", "Database", "Endpoints")
+                    var projectName by remember { mutableStateOf(moduleBuilder.projectName) }
+                    var groupId by remember { mutableStateOf(moduleBuilder.groupId) }
+                    var packageName by remember { mutableStateOf(moduleBuilder.packageName) }
+                    var version by remember { mutableStateOf(moduleBuilder.version) }
+                    var isAddGradleTasks by remember { mutableStateOf(moduleBuilder.isAddGradleTasks) }
                     var selectedDependencies by remember { mutableStateOf(moduleBuilder.selectedDependencies.toSet()) }
                     val state = rememberPagerState(initialPage = 0) { 4 }
                     val scope = rememberCoroutineScope()
@@ -83,9 +88,36 @@ class QBWSpringBootConfigurationStep(private val moduleBuilder: QBWSpringBootMod
                             modifier = Modifier.weight(1f),
                             state = state,
                             userScrollEnabled = false,
-                        ) {
-                            when (it) {
-                                0 -> ProjectInfoContent(moduleBuilder)
+                        ) { page ->
+                            when (page) {
+                                0 -> ProjectInfoContent(
+                                    projectName = projectName,
+                                    groupId = groupId,
+                                    packageName = packageName,
+                                    version = version,
+                                    isAddGradleTasks = isAddGradleTasks,
+                                    onProjectNameChange = {
+                                        projectName = it
+                                        moduleBuilder.projectName = it
+                                    },
+                                    onGroupIdChange = {
+                                        groupId = it
+                                        moduleBuilder.groupId = it
+                                    },
+                                    onPackageNameChange = {
+                                        packageName = it
+                                        moduleBuilder.packageName = it
+                                    },
+                                    onVersionChange = {
+                                        version = it
+                                        moduleBuilder.version = it
+                                    },
+                                    onAddGradleTasksChange = {
+                                        isAddGradleTasks = it
+                                        moduleBuilder.isAddGradleTasks = it
+                                    },
+                                )
+
                                 1 -> DependenciesContent(
                                     selectedDependencies = selectedDependencies.toList(),
                                     onDependencyChange = { dependency, isSelected ->

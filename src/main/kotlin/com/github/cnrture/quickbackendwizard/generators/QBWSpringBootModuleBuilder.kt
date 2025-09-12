@@ -19,7 +19,7 @@ import java.io.IOException
 class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
 
     var projectName: String = "demo"
-    var packageName: String = "com.example.demo"
+    var packageName: String = "demo"
     var groupId: String = "com.example"
     var version: String = "0.0.1-SNAPSHOT"
 
@@ -46,7 +46,7 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
     private fun createProjectStructure(modifiableRootModel: ModifiableRootModel) {
         val contentEntry = doAddContentEntry(modifiableRootModel) ?: return
         val root = contentEntry.file ?: return
-
+        packageName = groupId.plus(".").plus(projectName)
         try {
             createDirectoryStructure(root)
             createProjectFiles(root)
