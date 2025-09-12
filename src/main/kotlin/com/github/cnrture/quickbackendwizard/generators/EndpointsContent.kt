@@ -77,11 +77,9 @@ fun EndpointsContent(
         }
 
         QBWButton(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp),
+            modifier = Modifier.padding(top = 8.dp),
             text = "Add Endpoint",
-            backgroundColor = QBWTheme.colors.purple,
+            backgroundColor = QBWTheme.colors.red,
             onClick = {
                 endpoints = endpoints + ""
             }
@@ -101,9 +99,7 @@ private fun EndpointRow(
         elevation = 2.dp
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
