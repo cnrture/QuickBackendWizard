@@ -87,7 +87,6 @@ class QBWSpringBootConfigurationStep(private val moduleBuilder: QBWSpringBootMod
                             when (it) {
                                 0 -> ProjectInfoContent(moduleBuilder)
                                 1 -> DependenciesContent(
-                                    moduleBuilder = moduleBuilder,
                                     selectedDependencies = selectedDependencies.toList(),
                                     onDependencyChange = { dependency, isSelected ->
                                         selectedDependencies = if (isSelected) {

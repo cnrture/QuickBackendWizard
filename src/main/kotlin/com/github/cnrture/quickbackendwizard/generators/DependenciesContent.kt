@@ -19,7 +19,6 @@ import com.github.cnrture.quickbackendwizard.theme.QBWTheme
 
 @Composable
 fun DependenciesContent(
-    moduleBuilder: QBWSpringBootModuleBuilder,
     selectedDependencies: List<DependencyType>,
     onDependencyChange: (DependencyType, Boolean) -> Unit,
 ) {
@@ -56,10 +55,7 @@ fun DependenciesContent(
                     checked = selected,
                     label = dependency.name,
                     description = dependency.description,
-                    onCheckedChange = {
-                        onDependencyChange(dependency, it)
-                        moduleBuilder.selectedDependencies = selectedDependencies
-                    },
+                    onCheckedChange = { onDependencyChange(dependency, it) },
                 )
             }
         }
