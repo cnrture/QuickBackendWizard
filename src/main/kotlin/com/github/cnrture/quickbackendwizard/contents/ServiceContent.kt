@@ -6,13 +6,17 @@ fun getServiceContent(
     serviceName: String,
     repositoryName: String,
 ): String {
-    val imports = buildString {
+    return buildString {
+        appendLine("package $packageName.service")
+        appendLine()
         appendLine("import $packageName.common.ApiResponse")
         appendLine("import $packageName.entity.$entityName")
         appendLine("import $packageName.repository.$repositoryName")
         appendLine("import org.springframework.stereotype.Service")
-    }
-    val getAll = buildString {
+        appendLine()
+        appendLine("@Service")
+        appendLine("class $serviceName(private val repository: $repositoryName) {")
+        appendLine()
         appendLine("    fun getAll(): ApiResponse<List<$entityName>> {")
         appendLine("        try {")
         appendLine("            val entities = repository.findAll()")
@@ -30,12 +34,10 @@ fun getServiceContent(
         appendLine("        }")
         appendLine("    }")
         appendLine()
-    }
-    val getById = buildString {
         appendLine("    fun getById(id: Long): ApiResponse<$entityName> {")
         appendLine("        try {")
         appendLine("            val entity = repository.findById(id).orElseThrow { ")
-        appendLine("                NoSuchElementException(\"$entityName not found with id: \${id}\") ")
+        appendLine("                NoSuchElementException(\"$entityName not found with id: \$id\") ")
         appendLine("            }")
         appendLine("            return ApiResponse(")
         appendLine("                success = true,")
@@ -57,8 +59,6 @@ fun getServiceContent(
         appendLine("        }")
         appendLine("    }")
         appendLine()
-    }
-    val create = buildString {
         appendLine("    fun create(entity: $entityName): ApiResponse<$entityName> {")
         appendLine("        return try {")
         appendLine("            val savedEntity = repository.save(entity)")
@@ -76,14 +76,12 @@ fun getServiceContent(
         appendLine("        }")
         appendLine("    }")
         appendLine()
-    }
-    val update = buildString {
         appendLine("    fun update(id: Long, entity: $entityName): ApiResponse<$entityName> {")
         appendLine("        return try {")
         appendLine("            if (!repository.existsById(id)) {")
         appendLine("                return ApiResponse(")
         appendLine("                    success = false,")
-        appendLine("                    message = \"$entityName not found with id: \${id}\",")
+        appendLine("                    message = \"$entityName not found with id: \$id\",")
         appendLine("                    data = null,")
         appendLine("                )")
         appendLine("            }")
@@ -102,33 +100,29 @@ fun getServiceContent(
         appendLine("        }")
         appendLine("    }")
         appendLine()
-    }
-    val deleteById = buildString {
-        appendLine("    fun deleteById(id: Long) {")
-        appendLine("        if (repository.existsById(id)) {")
+        appendLine("    fun deleteById(id: Long): ApiResponse<Boolean> {")
+        appendLine("        return try {")
+        appendLine("            if (!repository.existsById(id)) {")
+        appendLine("                return ApiResponse(")
+        appendLine("                    success = false,")
+        appendLine("                    message = \"$entityName not found with id: \$id\",")
+        appendLine("                    data = false,")
+        appendLine("                )")
+        appendLine("            }")
         appendLine("            repository.deleteById(id)")
-        appendLine("        } else {")
-        appendLine("            throw NoSuchElementException(\"$entityName not found with id: \${id}\")")
+        appendLine("            ApiResponse(")
+        appendLine("                success = true,")
+        appendLine("                message = \"$entityName deleted successfully\",")
+        appendLine("                data = true,")
+        appendLine("            )")
+        appendLine("        } catch (e: Exception) {")
+        appendLine("            ApiResponse(")
+        appendLine("                success = false,")
+        appendLine("                message = \"Error deleting $entityName: \${e.message}\",")
+        appendLine("                data = false,")
+        appendLine("            )")
         appendLine("        }")
         appendLine("    }")
-    }
-    return buildString {
-        appendLine("package $packageName.service")
-        appendLine()
-        appendLine(imports)
-        appendLine()
-        appendLine("@Service")
-        appendLine("class $serviceName(private val repository: $repositoryName) {")
-        appendLine()
-        append(getAll)
-        appendLine()
-        append(getById)
-        appendLine()
-        append(create)
-        appendLine()
-        append(update)
-        appendLine()
-        append(deleteById)
         appendLine("}")
     }
 }
