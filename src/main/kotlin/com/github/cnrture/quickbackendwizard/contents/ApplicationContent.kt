@@ -19,6 +19,7 @@ fun getApplicationContent(
 fun getApplicationPropertiesContent(
     projectName: String,
     selectedDatabase: String,
+    isJWTEnabled: Boolean = false,
 ): String {
     val h2 = buildString {
         appendLine("spring.datasource.url=jdbc:h2:mem:testdb")
@@ -75,6 +76,13 @@ fun getApplicationPropertiesContent(
             appendLine("cors.allowed-methods=${'$'}{ALLOWED_METHODS:GET,POST,PUT,DELETE,OPTIONS,PATCH}")
             appendLine("cors.allowed-headers=${'$'}{ALLOWED_HEADERS:Authorization,Content-Type,Accept,Origin,User-Agent,DNT,Cache-Control,X-Mx-ReqToken,Keep-Alive,X-Requested-With,If-Modified-Since}")
             appendLine("cors.max-age=${'$'}{CORS_MAX_AGE:3600}")
+            if (isJWTEnabled) {
+                appendLine()
+                appendLine("# JWT Configuration")
+                appendLine("jwt.secret=${'$'}{JWT_SECRET}")
+                appendLine("jwt.token-validity-in-minutes=${'$'}{JWT_TOKEN_VALIDITY_IN_MINUTES:180}")
+                appendLine("jwt.token-validity-in-minutes-for-remember-me=${'$'}{JWT_TOKEN_VALIDITY_IN_MINUTES_FOR_REMEMBER_ME:20160}")
+            }
         }
     }
 }

@@ -41,6 +41,20 @@ data class DependencyType(
             name = "Enhanced Testing",
             description = "Includes Kotest, MockK, Testcontainers and WebMvcTest support.",
         )
-        val ALL = listOf(SPRING_WEB, SPRING_DATA_JPA, SPRING_SECURITY, VALIDATION, FIREBASE, SWAGGER, TESTING_ENHANCED)
+        val JWT_AUTHENTICATION = DependencyType(
+            type = "jwt-authentication",
+            name = "JWT Authentication",
+            description = "Complete JWT authentication system with login, register, and refresh token support.",
+        )
+        val ALL = listOf(
+            SPRING_WEB,
+            SPRING_DATA_JPA,
+            SPRING_SECURITY,
+            VALIDATION,
+            FIREBASE,
+            SWAGGER,
+            TESTING_ENHANCED,
+            JWT_AUTHENTICATION
+        )
     }
 }

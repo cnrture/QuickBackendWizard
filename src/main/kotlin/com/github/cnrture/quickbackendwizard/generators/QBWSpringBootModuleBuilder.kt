@@ -126,6 +126,11 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         if (selectedDependencies.contains(DependencyType.SWAGGER)) createSwaggerConfigFile(root)
         if (selectedDependencies.contains(DependencyType.FIREBASE)) createFirebaseConfigFile(root)
 
+        // Create JWT Authentication System
+        if (selectedDependencies.contains(DependencyType.JWT_AUTHENTICATION)) {
+            createJWTAuthenticationSystem(root)
+        }
+
         // Create test configuration when enhanced testing is enabled
         if (selectedDependencies.contains(DependencyType.TESTING_ENHANCED)) {
             createTestApplicationProperties(root)
@@ -182,6 +187,13 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
                 appendLine()
                 appendLine("    // Swagger/OpenAPI Documentation")
                 appendLine("    implementation(\"org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0\")")
+            }
+            if (selectedDependencies.contains(DependencyType.JWT_AUTHENTICATION)) {
+                appendLine()
+                appendLine("    // JWT Authentication")
+                appendLine("    implementation(\"io.jsonwebtoken:jjwt-api:0.12.3\")")
+                appendLine("    runtimeOnly(\"io.jsonwebtoken:jjwt-impl:0.12.3\")")
+                appendLine("    runtimeOnly(\"io.jsonwebtoken:jjwt-jackson:0.12.3\")")
             }
             appendLine()
             appendLine("    // Testing")
@@ -263,7 +275,11 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
             ?.findChild("main")
             ?.findChild("resources")
 
-        val content = getApplicationPropertiesContent(projectName, selectedDatabase)
+        val content = getApplicationPropertiesContent(
+            projectName,
+            selectedDatabase,
+            selectedDependencies.contains(DependencyType.JWT_AUTHENTICATION)
+        )
 
         resourcesDir?.let { createFile(it, "application.properties", content) }
     }
@@ -370,7 +386,12 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         val dbName = dbName.ifEmpty { "testdb" }
         val dbUsername = dbUsername.ifEmpty { "root" }
         val dbPassword = dbPassword.ifEmpty { "password" }
-        val content = getEnvironmentContent(dbName, dbUsername, dbPassword)
+        val content = getEnvironmentContent(
+            dbName,
+            dbUsername,
+            dbPassword,
+            selectedDependencies.contains(DependencyType.JWT_AUTHENTICATION)
+        )
         createFile(root, ".env", content)
     }
 
@@ -456,6 +477,61 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         val content = getGlobalExceptionHandlerContent(packageName)
 
         configDir?.let { createFile(it, "GlobalExceptionHandler.kt", content) }
+    }
+
+    private fun createJWTAuthenticationSystem(root: VirtualFile) {
+        val packageParts = packageName.split(".")
+        var srcKotlinDir = root.findChild("src")
+            ?.findChild("main")
+            ?.findChild("kotlin")
+
+        packageParts.forEach { srcKotlinDir = srcKotlinDir?.findChild(it) }
+
+        // Create JWT Security components
+        val securityDir = srcKotlinDir?.findChild("security") ?: srcKotlinDir?.createChildDirectory(this, "security")
+        val jwtUtilContent = getJWTUtilContent(packageName)
+        val jwtFilterContent = getJWTAuthenticationFilterContent(packageName)
+        securityDir?.let {
+            createFile(it, "JWTUtil.kt", jwtUtilContent)
+            createFile(it, "JWTAuthenticationFilter.kt", jwtFilterContent)
+        }
+
+        // Create JWT Config
+        val configDir = srcKotlinDir?.findChild("config") ?: srcKotlinDir?.createChildDirectory(this, "config")
+        val securityConfigContent = getJWTSecurityConfigContent(packageName)
+        configDir?.let { createFile(it, "SecurityConfig.kt", securityConfigContent) }
+
+        // Create User Entity
+        val entityDir = srcKotlinDir?.findChild("entity") ?: srcKotlinDir?.createChildDirectory(this, "entity")
+        val userEntityContent = getUserEntityContent(packageName)
+        entityDir?.let { createFile(it, "User.kt", userEntityContent) }
+
+        // Create DTOs
+        val dtoDir = srcKotlinDir?.findChild("dto") ?: srcKotlinDir?.createChildDirectory(this, "dto")
+        val authDtoDir = dtoDir?.findChild("auth") ?: dtoDir?.createChildDirectory(this, "auth")
+        val authDtosContent = getAuthDTOsContent(packageName)
+        authDtoDir?.let { createFile(it, "AuthDTOs.kt", authDtosContent) }
+
+        // Create Repository
+        val repositoryDir =
+            srcKotlinDir?.findChild("repository") ?: srcKotlinDir?.createChildDirectory(this, "repository")
+        val userRepositoryContent = getUserRepositoryContent(packageName)
+        repositoryDir?.let { createFile(it, "UserRepository.kt", userRepositoryContent) }
+
+        // Create Services
+        val serviceDir = srcKotlinDir?.findChild("service") ?: srcKotlinDir?.createChildDirectory(this, "service")
+        val authServiceContent = getAuthServiceContent(packageName)
+        val userDetailsServiceContent = getCustomUserDetailsServiceContent(packageName)
+        serviceDir?.let {
+            createFile(it, "AuthService.kt", authServiceContent)
+            createFile(it, "CustomUserDetailsService.kt", userDetailsServiceContent)
+        }
+
+        // Create Controller
+        val controllerDir =
+            srcKotlinDir?.findChild("controller") ?: srcKotlinDir?.createChildDirectory(this, "controller")
+        val authControllerContent = getAuthControllerContent(packageName)
+        controllerDir?.let { createFile(it, "AuthController.kt", authControllerContent) }
     }
 
     private fun createTestApplicationProperties(root: VirtualFile) {
