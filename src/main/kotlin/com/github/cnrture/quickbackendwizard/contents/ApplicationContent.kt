@@ -68,7 +68,7 @@ fun getApplicationPropertiesContent(
             appendLine()
             appendLine("# Server Configuration")
             appendLine("server.port=8080")
-            appendLine("server.servlet.context-path=/${projectName.lowercase().trim()}")
+            appendLine("server.servlet.context-path=/api/v1")
             appendLine()
             appendLine("# Cors Configuration (Environment-based for security)")
             appendLine("cors.allowed-origins=${'$'}{ALLOWED_ORIGINS:*}")
