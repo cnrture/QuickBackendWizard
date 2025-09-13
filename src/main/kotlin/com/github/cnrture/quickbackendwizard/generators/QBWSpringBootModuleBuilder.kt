@@ -119,7 +119,10 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         createDatabaseFiles(root)
         createEnvFile(root, dbName, dbUsername, dbPassword)
         createApiResponseFile(root)
-        if (selectedDependencies.contains(DependencyType.SPRING_WEB)) createWebConfigFile(root)
+        if (selectedDependencies.contains(DependencyType.SPRING_WEB)) {
+            createWebConfigFile(root)
+            createGlobalExceptionHandler(root)
+        }
         if (selectedDependencies.contains(DependencyType.SWAGGER)) createSwaggerConfigFile(root)
         if (selectedDependencies.contains(DependencyType.FIREBASE)) createFirebaseConfigFile(root)
 
@@ -439,6 +442,20 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
 
             configDir?.let { createFile(it, "FirebaseConfig.kt", content) }
         }
+    }
+
+    private fun createGlobalExceptionHandler(root: VirtualFile) {
+        val packageParts = packageName.split(".")
+        var srcKotlinDir = root.findChild("src")
+            ?.findChild("main")
+            ?.findChild("kotlin")
+
+        packageParts.forEach { srcKotlinDir = srcKotlinDir?.findChild(it) }
+
+        val configDir = srcKotlinDir?.findChild("config") ?: srcKotlinDir?.createChildDirectory(this, "config")
+        val content = getGlobalExceptionHandlerContent(packageName)
+
+        configDir?.let { createFile(it, "GlobalExceptionHandler.kt", content) }
     }
 
     private fun createTestApplicationProperties(root: VirtualFile) {
