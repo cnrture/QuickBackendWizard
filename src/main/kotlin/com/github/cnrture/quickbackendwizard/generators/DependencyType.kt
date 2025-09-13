@@ -31,6 +31,11 @@ data class DependencyType(
             name = "Swagger/OpenAPI",
             description = "Generates API documentation using Springdoc OpenAPI.",
         )
-        val ALL = listOf(SPRING_WEB, SPRING_DATA_JPA, SPRING_SECURITY, VALIDATION, SWAGGER)
+        val FIREBASE = DependencyType(
+            type = "firebase-admin",
+            name = "Firebase Admin SDK",
+            description = "Integrates Firebase services like authentication and messaging.",
+        )
+        val ALL = listOf(SPRING_WEB, SPRING_DATA_JPA, SPRING_SECURITY, VALIDATION, FIREBASE, SWAGGER)
     }
 }

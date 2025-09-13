@@ -121,6 +121,7 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         createApiResponseFile(root)
         if (selectedDependencies.contains(DependencyType.SPRING_WEB)) createWebConfigFile(root)
         if (selectedDependencies.contains(DependencyType.SWAGGER)) createSwaggerConfigFile(root)
+        if (selectedDependencies.contains(DependencyType.FIREBASE)) createFirebaseConfigFile(root)
         endpoints.forEach { endpoint ->
             createEntityFile(root, endpoint)
             createRepositoryFile(root, endpoint)
@@ -153,6 +154,11 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
                 "mysql" -> appendLine("    implementation(\"mysql:mysql-connector-java:8.0.33\")")
                 "mariadb" -> appendLine("    implementation(\"org.mariadb.jdbc:mariadb-java-client:3.1.4\")")
                 "postgresql" -> appendLine("    implementation(\"org.postgresql:postgresql:42.6.0\")")
+            }
+            if (selectedDependencies.contains(DependencyType.FIREBASE)) {
+                appendLine()
+                appendLine("    // Firebase Admin SDK")
+                appendLine("    implementation(\"com.google.firebase:firebase-admin:9.2.0\")")
             }
             if (selectedDependencies.contains(DependencyType.SWAGGER)) {
                 appendLine()
@@ -381,6 +387,22 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         val content = getApiResponseContent(packageName, selectedDependencies.contains(DependencyType.SWAGGER))
 
         commonDir?.let { createFile(it, "ApiResponse.kt", content) }
+    }
+
+    private fun createFirebaseConfigFile(root: VirtualFile) {
+        if (selectedDependencies.contains(DependencyType.FIREBASE)) {
+            val packageParts = packageName.split(".")
+            var srcKotlinDir = root.findChild("src")
+                ?.findChild("main")
+                ?.findChild("kotlin")
+
+            packageParts.forEach { srcKotlinDir = srcKotlinDir?.findChild(it) }
+
+            val configDir = srcKotlinDir?.findChild("config") ?: srcKotlinDir?.createChildDirectory(this, "config")
+            val content = getFirebaseConfigContent(packageName)
+
+            configDir?.let { createFile(it, "FirebaseConfig.kt", content) }
+        }
     }
 
     override fun createWizardSteps(

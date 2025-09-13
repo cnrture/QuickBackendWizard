@@ -1,9 +1,6 @@
 package com.github.cnrture.quickbackendwizard.generators
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
@@ -17,6 +14,7 @@ import com.github.cnrture.quickbackendwizard.components.QBWCheckbox
 import com.github.cnrture.quickbackendwizard.components.QBWText
 import com.github.cnrture.quickbackendwizard.theme.QBWTheme
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun DependenciesContent(
     selectedDependencies: List<DependencyType>,
@@ -46,12 +44,16 @@ fun DependenciesContent(
             modifier = Modifier.padding(vertical = 8.dp),
             color = QBWTheme.colors.lightGray,
         )
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+        FlowRow(
+            modifier = Modifier.fillMaxWidth(),
+            maxItemsInEachRow = 2,
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             DependencyType.ALL.forEach { dependency ->
                 val selected = selectedDependencies.contains(dependency)
                 QBWCheckbox(
+                    modifier = Modifier.weight(1f),
                     checked = selected,
                     label = dependency.name,
                     description = dependency.description,
