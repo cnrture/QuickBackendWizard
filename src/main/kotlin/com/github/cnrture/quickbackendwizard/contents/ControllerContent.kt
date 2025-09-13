@@ -22,12 +22,16 @@ fun getControllerContent(
             appendLine("import io.swagger.v3.oas.annotations.responses.ApiResponses")
             appendLine("import io.swagger.v3.oas.annotations.responses.ApiResponse as SwaggerApiResponse")
         }
+        appendLine("import jakarta.validation.Valid")
+        appendLine("import jakarta.validation.constraints.Min")
         appendLine("import org.springframework.http.HttpStatus")
         appendLine("import org.springframework.http.ResponseEntity")
+        appendLine("import org.springframework.validation.annotation.Validated")
         appendLine("import org.springframework.web.bind.annotation.*")
         appendLine()
         appendLine("@RestController")
         appendLine("@RequestMapping(\"/$endpoint\")")
+        appendLine("@Validated")
         if (isSwaggerEnabled) {
             appendLine("@Tag(name = \"$entityName Controller\", description = \"CRUD operations for $entityName\")")
         }
@@ -72,7 +76,7 @@ fun getControllerContent(
             appendLine("    )")
         }
         appendLine("    @GetMapping(\"/{id}\")")
-        appendLine("    fun getById(@PathVariable id: Long): ResponseEntity<ApiResponse<$entityName>> {")
+        appendLine("    fun getById(@PathVariable @Min(1) id: Long): ResponseEntity<ApiResponse<$entityName>> {")
         appendLine("        val entity = service.getById(id)")
         appendLine("        return if (entity.success) {")
         appendLine("            ResponseEntity.ok(entity)")
@@ -94,7 +98,7 @@ fun getControllerContent(
             appendLine("    )")
         }
         appendLine("    @PostMapping")
-        appendLine("    fun create(@RequestBody entity: $entityName): ResponseEntity<ApiResponse<$entityName>> {")
+        appendLine("    fun create(@Valid @RequestBody entity: $entityName): ResponseEntity<ApiResponse<$entityName>> {")
         appendLine("        val createdEntity = service.create(entity)")
         appendLine("        return if (createdEntity.success) {")
         appendLine("            ResponseEntity.status(HttpStatus.CREATED).body(createdEntity)")
@@ -116,7 +120,7 @@ fun getControllerContent(
             appendLine("    )")
         }
         appendLine("    @PutMapping(\"/{id}\")")
-        appendLine("    fun update(@PathVariable id: Long, @RequestBody entity: $entityName): ResponseEntity<ApiResponse<$entityName>> {")
+        appendLine("    fun update(@PathVariable @Min(1) id: Long, @Valid @RequestBody entity: $entityName): ResponseEntity<ApiResponse<$entityName>> {")
         appendLine("        val updatedEntity = service.update(id, entity)")
         appendLine("        return if (updatedEntity.success) {")
         appendLine("            ResponseEntity.ok(updatedEntity)")
@@ -138,7 +142,7 @@ fun getControllerContent(
             appendLine("    )")
         }
         appendLine("    @DeleteMapping(\"/{id}\")")
-        appendLine("    fun deleteById(@PathVariable id: Long): ResponseEntity<ApiResponse<Unit>> {")
+        appendLine("    fun deleteById(@PathVariable @Min(1) id: Long): ResponseEntity<ApiResponse<Unit>> {")
         appendLine("        val deleted = service.deleteById(id)")
         appendLine("        return if (deleted.success) {")
         appendLine("            ResponseEntity.noContent().build()")
