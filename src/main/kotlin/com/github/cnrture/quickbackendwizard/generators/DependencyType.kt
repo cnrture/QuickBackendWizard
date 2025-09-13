@@ -36,6 +36,11 @@ data class DependencyType(
             name = "Firebase Admin SDK",
             description = "Integrates Firebase services like authentication and messaging.",
         )
-        val ALL = listOf(SPRING_WEB, SPRING_DATA_JPA, SPRING_SECURITY, VALIDATION, FIREBASE, SWAGGER)
+        val TESTING_ENHANCED = DependencyType(
+            type = "testing-enhanced",
+            name = "Enhanced Testing",
+            description = "Includes Kotest, MockK, Testcontainers and WebMvcTest support.",
+        )
+        val ALL = listOf(SPRING_WEB, SPRING_DATA_JPA, SPRING_SECURITY, VALIDATION, FIREBASE, SWAGGER, TESTING_ENHANCED)
     }
 }

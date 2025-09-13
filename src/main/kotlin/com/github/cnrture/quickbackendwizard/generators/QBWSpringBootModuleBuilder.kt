@@ -122,11 +122,26 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
         if (selectedDependencies.contains(DependencyType.SPRING_WEB)) createWebConfigFile(root)
         if (selectedDependencies.contains(DependencyType.SWAGGER)) createSwaggerConfigFile(root)
         if (selectedDependencies.contains(DependencyType.FIREBASE)) createFirebaseConfigFile(root)
+
+        // Create test configuration when enhanced testing is enabled
+        if (selectedDependencies.contains(DependencyType.TESTING_ENHANCED)) {
+            createTestApplicationProperties(root)
+            createTestConfiguration(root)
+        }
+
         endpoints.forEach { endpoint ->
             createEntityFile(root, endpoint)
             createRepositoryFile(root, endpoint)
             createServiceFile(root, endpoint)
             createControllerFile(root, endpoint)
+
+            // Create test files when enhanced testing is enabled
+            if (selectedDependencies.contains(DependencyType.TESTING_ENHANCED)) {
+                createControllerTestFile(root, endpoint)
+                createServiceTestFile(root, endpoint)
+                createRepositoryTestFile(root, endpoint)
+                createIntegrationTestFile(root, endpoint)
+            }
         }
     }
 
@@ -168,10 +183,26 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
             appendLine()
             appendLine("    // Testing")
             appendLine("    testImplementation(\"org.springframework.boot:spring-boot-starter-test\")")
-            appendLine("    testImplementation(\"org.jetbrains.kotlin:kotlin-test-junit5\")")
-            appendLine("    testImplementation(\"io.mockk:mockk:1.13.8\")")
-            appendLine("    testImplementation(\"io.mockk:mockk-jvm:1.13.8\")")
-            appendLine("    testRuntimeOnly(\"org.junit.platform:junit-platform-launcher\")")
+            if (selectedDependencies.contains(DependencyType.TESTING_ENHANCED)) {
+                appendLine("    // Enhanced Testing Framework")
+                appendLine("    testImplementation(\"io.kotest:kotest-runner-junit5:5.8.0\")")
+                appendLine("    testImplementation(\"io.kotest:kotest-assertions-core:5.8.0\")")
+                appendLine("    testImplementation(\"io.kotest:kotest-property:5.8.0\")")
+                appendLine("    testImplementation(\"io.kotest.extensions:kotest-extensions-spring:1.1.3\")")
+                appendLine("    testImplementation(\"io.mockk:mockk:1.13.8\")")
+                appendLine("    testImplementation(\"io.mockk:mockk-jvm:1.13.8\")")
+                appendLine("    testImplementation(\"com.ninja-squad:springmockk:4.0.2\")")
+                appendLine("    testImplementation(\"org.testcontainers:junit-jupiter:1.19.3\")")
+                appendLine("    testImplementation(\"org.testcontainers:postgresql:1.19.3\")")
+                appendLine("    testImplementation(\"org.testcontainers:mysql:1.19.3\")")
+                appendLine("    testImplementation(\"org.testcontainers:mariadb:1.19.3\")")
+                appendLine("    testRuntimeOnly(\"org.junit.platform:junit-platform-launcher\")")
+            } else {
+                appendLine("    testImplementation(\"org.jetbrains.kotlin:kotlin-test-junit5\")")
+                appendLine("    testImplementation(\"io.mockk:mockk:1.13.8\")")
+                appendLine("    testImplementation(\"io.mockk:mockk-jvm:1.13.8\")")
+                appendLine("    testRuntimeOnly(\"org.junit.platform:junit-platform-launcher\")")
+            }
         }.toString()
 
         val content = getGradleContent(groupId, version, dependencies, isAddGradleTasks)
@@ -355,7 +386,12 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
     }
 
     private fun createReadmeFile(root: VirtualFile) {
-        val content = getReadmeContent(projectName, selectedDatabase, endpoints)
+        val content = getReadmeContent(
+            projectName,
+            selectedDatabase,
+            endpoints,
+            selectedDependencies.contains(DependencyType.TESTING_ENHANCED)
+        )
         createFile(root, "README.md", content)
     }
 
@@ -403,6 +439,131 @@ class QBWSpringBootModuleBuilder : JavaModuleBuilder() {
 
             configDir?.let { createFile(it, "FirebaseConfig.kt", content) }
         }
+    }
+
+    private fun createTestApplicationProperties(root: VirtualFile) {
+        val testResourcesDir = root.findChild("src")
+            ?.findChild("test")
+            ?.findChild("kotlin")
+            ?.parent
+            ?.findChild("resources") ?: root.findChild("src")
+            ?.findChild("test")
+            ?.findChild("kotlin")
+            ?.parent
+            ?.createChildDirectory(this, "resources")
+
+        val content = getTestApplicationPropertiesContent(selectedDatabase)
+        testResourcesDir?.let { createFile(it, "application-test.properties", content) }
+    }
+
+    private fun createTestConfiguration(root: VirtualFile) {
+        val packageParts = packageName.split(".")
+        var srcKotlinTestDir = root.findChild("src")
+            ?.findChild("test")
+            ?.findChild("kotlin")
+
+        packageParts.forEach { srcKotlinTestDir = srcKotlinTestDir?.findChild(it) }
+
+        val configDir = srcKotlinTestDir?.findChild("config") ?: srcKotlinTestDir?.createChildDirectory(this, "config")
+        val content = getTestConfigurationContent(packageName, selectedDatabase)
+
+        configDir?.let { createFile(it, "TestConfig.kt", content) }
+    }
+
+    private fun createControllerTestFile(root: VirtualFile, endpoint: String) {
+        val packageParts = packageName.split(".")
+        var srcKotlinTestDir = root.findChild("src")
+            ?.findChild("test")
+            ?.findChild("kotlin")
+
+        packageParts.forEach { srcKotlinTestDir = srcKotlinTestDir?.findChild(it) }
+
+        val controllerTestDir = srcKotlinTestDir?.findChild("controller")
+            ?: srcKotlinTestDir?.createChildDirectory(this, "controller")
+
+        val entityName = endpoint.removeSuffix("s").replaceFirstChar { it.uppercase() }
+        val controllerName = "${entityName}Controller"
+
+        val content = getControllerTestContent(
+            packageName = packageName,
+            entityName = entityName,
+            controllerName = controllerName,
+            endpoint = endpoint
+        )
+
+        controllerTestDir?.let { createFile(it, "${controllerName}Test.kt", content) }
+    }
+
+    private fun createServiceTestFile(root: VirtualFile, endpoint: String) {
+        val packageParts = packageName.split(".")
+        var srcKotlinTestDir = root.findChild("src")
+            ?.findChild("test")
+            ?.findChild("kotlin")
+
+        packageParts.forEach { srcKotlinTestDir = srcKotlinTestDir?.findChild(it) }
+
+        val serviceTestDir = srcKotlinTestDir?.findChild("service")
+            ?: srcKotlinTestDir?.createChildDirectory(this, "service")
+
+        val entityName = endpoint.removeSuffix("s").replaceFirstChar { it.uppercase() }
+        val serviceName = "${entityName}Service"
+        val repositoryName = "${entityName}Repository"
+
+        val content = getServiceTestContent(
+            packageName = packageName,
+            entityName = entityName,
+            serviceName = serviceName,
+            repositoryName = repositoryName
+        )
+
+        serviceTestDir?.let { createFile(it, "${serviceName}Test.kt", content) }
+    }
+
+    private fun createRepositoryTestFile(root: VirtualFile, endpoint: String) {
+        val packageParts = packageName.split(".")
+        var srcKotlinTestDir = root.findChild("src")
+            ?.findChild("test")
+            ?.findChild("kotlin")
+
+        packageParts.forEach { srcKotlinTestDir = srcKotlinTestDir?.findChild(it) }
+
+        val repositoryTestDir = srcKotlinTestDir?.findChild("repository")
+            ?: srcKotlinTestDir?.createChildDirectory(this, "repository")
+
+        val entityName = endpoint.removeSuffix("s").replaceFirstChar { it.uppercase() }
+        val repositoryName = "${entityName}Repository"
+
+        val content = getRepositoryTestContent(
+            packageName = packageName,
+            entityName = entityName,
+            repositoryName = repositoryName,
+            selectedDatabase = selectedDatabase
+        )
+
+        repositoryTestDir?.let { createFile(it, "${repositoryName}Test.kt", content) }
+    }
+
+    private fun createIntegrationTestFile(root: VirtualFile, endpoint: String) {
+        val packageParts = packageName.split(".")
+        var srcKotlinTestDir = root.findChild("src")
+            ?.findChild("test")
+            ?.findChild("kotlin")
+
+        packageParts.forEach { srcKotlinTestDir = srcKotlinTestDir?.findChild(it) }
+
+        val integrationTestDir = srcKotlinTestDir?.findChild("integration")
+            ?: srcKotlinTestDir?.createChildDirectory(this, "integration")
+
+        val entityName = endpoint.removeSuffix("s").replaceFirstChar { it.uppercase() }
+
+        val content = getIntegrationTestContent(
+            packageName = packageName,
+            entityName = entityName,
+            endpoint = endpoint,
+            selectedDatabase = selectedDatabase
+        )
+
+        integrationTestDir?.let { createFile(it, "${entityName}IntegrationTest.kt", content) }
     }
 
     override fun createWizardSteps(

@@ -4,7 +4,9 @@ fun getReadmeContent(
     projectName: String,
     selectedDatabase: String,
     endpoints: List<String>,
-) = """
+    isEnhancedTestingEnabled: Boolean = false,
+): String {
+    return """
 # $projectName
 
 A Spring Boot application generated with Quick Backend Wizard.
@@ -15,6 +17,7 @@ A Spring Boot application generated with Quick Backend Wizard.
 - Kotlin
 - ${selectedDatabase.uppercase()} Database
 ${if (endpoints.isNotEmpty()) "- Generated REST APIs: ${endpoints.joinToString(", ")}" else ""}
+${if (isEnhancedTestingEnabled) "- Enhanced Testing Suite (Kotest, MockK, Testcontainers)" else ""}
 
 ## Getting Started
 
@@ -22,6 +25,7 @@ ${if (endpoints.isNotEmpty()) "- Generated REST APIs: ${endpoints.joinToString("
 
 - Java 21 or higher
 - ${getDatabasePrerequisite(selectedDatabase)}
+${if (isEnhancedTestingEnabled) "- Docker (for integration tests with Testcontainers)" else ""}
 
 ### Environment Configuration
 
@@ -65,6 +69,8 @@ ${getDatabaseSetupInstructions(selectedDatabase)}
    java -jar build/libs/$projectName-*.jar
    ```
 
+${if (isEnhancedTestingEnabled) getTestingDocumentation() else ""}
+
 ### API Endpoints
 
 The application will be available at: `http://localhost:8080/$projectName`
@@ -76,6 +82,7 @@ ${if (endpoints.isNotEmpty()) getEndpointsDocumentation(endpoints) else "No spec
 - Application properties: `src/main/resources/application.properties`
 - Environment variables: `.env` file in project root
 - Database schema: `create_tables.sql` (if applicable)
+${if (isEnhancedTestingEnabled) "- Test configuration: `src/test/resources/application-test.properties`" else ""}
 
 ### Troubleshooting
 
@@ -87,6 +94,13 @@ ${if (endpoints.isNotEmpty()) getEndpointsDocumentation(endpoints) else "No spec
 **Build Issues:**
 - Make sure you have Java 21 or higher
 - Clean and rebuild: `./gradlew clean build`
+
+${if (isEnhancedTestingEnabled) """
+**Testing Issues:**
+- Make sure Docker is running for integration tests
+- Run tests with: `./gradlew test`
+- Skip integration tests: `./gradlew test -Dkotest.tags.exclude=integration`
+""".trimIndent() else ""}
 
 ## Generated Structure
 
@@ -102,10 +116,78 @@ $projectName/
 │       └── entity/
 ├── src/main/resources/
 │   └── application.properties
+${if (isEnhancedTestingEnabled) """├── src/test/kotlin/
+│   └── [package]/
+│       ├── controller/     # Controller unit tests
+│       ├── service/        # Service unit tests  
+│       ├── repository/     # Repository integration tests
+│       ├── integration/    # Full integration tests
+│       └── config/         # Test configuration
+├── src/test/resources/
+│   └── application-test.properties""" else ""}
 ├── .env
 ├── build.gradle.kts
 └── README.md
 ```
+""".trimIndent()
+}
+
+private fun getTestingDocumentation(): String = """
+### Testing
+
+This project includes a comprehensive testing suite with multiple layers:
+
+#### Test Types
+
+1. **Unit Tests**
+   - Controller tests with `@WebMvcTest`
+   - Service tests with mocked dependencies
+   - Uses MockK for mocking
+
+2. **Integration Tests** 
+   - Repository tests with `@DataJpaTest`
+   - Full application tests with Testcontainers
+   - Real database instances in Docker
+
+3. **API Integration Tests**
+   - Complete CRUD operation testing
+   - End-to-end API validation
+
+#### Running Tests
+
+**All tests:**
+```bash
+./gradlew test
+```
+
+**Unit tests only:**
+```bash
+./gradlew test --tests "*Test" --exclude-task integrationTest
+```
+
+**Integration tests only:**
+```bash
+./gradlew test --tests "*IntegrationTest"
+```
+
+**Specific test class:**
+```bash
+./gradlew test --tests "YourEntityControllerTest"
+```
+
+#### Test Frameworks Used
+
+- **Kotest**: Modern testing framework for Kotlin
+- **MockK**: Mocking library for Kotlin
+- **Testcontainers**: Integration testing with real databases
+- **SpringMockK**: Spring Boot integration for MockK
+- **Spring Boot Test**: Spring testing support
+
+#### Test Configuration
+
+- Test database runs in Docker via Testcontainers
+- Separate test configuration in `application-test.properties`
+- Test data is isolated and cleaned up automatically
 """.trimIndent()
 
 private fun getDatabasePrerequisite(database: String): String = when (database) {
