@@ -1,52 +1,62 @@
-# QuickBackendWizard
+# 🚀 QuickBackendWizard
 
-![Build](https://github.com/cnrture/QuickBackendWizard/workflows/Build/badge.svg)
-[![Version](https://img.shields.io/jetbrains/plugin/v/MARKETPLACE_ID.svg)](https://plugins.jetbrains.com/plugin/MARKETPLACE_ID)
-[![Downloads](https://img.shields.io/jetbrains/plugin/d/MARKETPLACE_ID.svg)](https://plugins.jetbrains.com/plugin/MARKETPLACE_ID)
+> ⚡ Ultimate Spring Boot development companion for IntelliJ IDEA
 
-## Template ToDo list
-- [x] Create a new [IntelliJ Platform Plugin Template][template] project.
-- [ ] Get familiar with the [template documentation][template].
-- [ ] Adjust the [pluginGroup](./gradle.properties) and [pluginName](./gradle.properties), as well as the [id](./src/main/resources/META-INF/plugin.xml) and [sources package](./src/main/kotlin).
-- [ ] Adjust the plugin description in `README` (see [Tips][docs:plugin-description])
-- [ ] Review the [Legal Agreements](https://plugins.jetbrains.com/docs/marketplace/legal-agreements.html?from=IJPluginTemplate).
-- [ ] [Publish a plugin manually](https://plugins.jetbrains.com/docs/intellij/publishing-plugin.html?from=IJPluginTemplate) for the first time.
-- [ ] Set the `MARKETPLACE_ID` in the above README badges. You can obtain it once the plugin is published to JetBrains Marketplace.
-- [ ] Set the [Plugin Signing](https://plugins.jetbrains.com/docs/intellij/plugin-signing.html?from=IJPluginTemplate) related [secrets](https://github.com/JetBrains/intellij-platform-plugin-template#environment-variables).
-- [ ] Set the [Deployment Token](https://plugins.jetbrains.com/docs/marketplace/plugin-upload.html?from=IJPluginTemplate).
-- [ ] Click the <kbd>Watch</kbd> button on the top of the [IntelliJ Platform Plugin Template][template] to be notified about releases containing new features and fixes.
-- [ ] Configure the [CODECOV_TOKEN](https://docs.codecov.com/docs/quick-start) secret for automated test coverage reports on PRs
+The fastest way to bootstrap production-ready Kotlin Spring Boot applications with modern architecture and best practices built-in.
 
-<!-- Plugin description -->
-This Fancy IntelliJ Platform Plugin is going to be your implementation of the brilliant ideas that you have.
+## ✨ Features
 
-This specific section is a source for the [plugin.xml](/src/main/resources/META-INF/plugin.xml) file which will be extracted by the [Gradle](/build.gradle.kts) during the build process.
+### 🎯 **One-Click Project Generation**
+- Modern Kotlin Spring Boot projects
+- Pre-configured Gradle with latest versions
+- Production-ready project structure
 
-To keep everything working, do not remove `<!-- ... -->` sections. 
-<!-- Plugin description end -->
+### 🛡️ **Built-in Security**
+- JWT Authentication system
+- Role-based authorization
+- Security best practices
 
-## Installation
+### 🚀 **Modern Stack**
+- Spring Boot 3.3+
+- Kotlin 1.9+
+- Gradle with version catalogs
+- Docker-ready configuration
 
-- Using the IDE built-in plugin system:
-  
-  <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Marketplace</kbd> > <kbd>Search for "QuickBackendWizard"</kbd> >
-  <kbd>Install</kbd>
-  
-- Using JetBrains Marketplace:
+### 📊 **Database Support**
+- Multiple database options (MySQL, PostgreSQL, MariaDB, H2)
+- JPA entities and repositories
+- Database migration scripts
 
-  Go to [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/MARKETPLACE_ID) and install it by clicking the <kbd>Install to ...</kbd> button in case your IDE is running.
+### 🔧 **Developer Experience**
+- Swagger/OpenAPI documentation
+- Enhanced testing with Kotest & Testcontainers
+- Hot reload and development tools
+- Comprehensive error handling
 
-  You can also download the [latest release](https://plugins.jetbrains.com/plugin/MARKETPLACE_ID/versions) from JetBrains Marketplace and install it manually using
-  <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>⚙️</kbd> > <kbd>Install plugin from disk...</kbd>
+### 🎨 **Code Generation**
+- REST API endpoints
+- Entity-Repository-Service-Controller layers
+- Test files and configurations
+- Docker and deployment files
 
-- Manually:
+## 🎬 Quick Start
 
-  Download the [latest release](https://github.com/cnrture/QuickBackendWizard/releases/latest) and install it manually using
-  <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>⚙️</kbd> > <kbd>Install plugin from disk...</kbd>
+1. Install the plugin from JetBrains Marketplace
+2. Create new project → **QBW Spring Boot**
+3. Configure your project settings
+4. Start coding immediately!
 
+## 🏷️ What You Get
+
+- ✅ Production-ready architecture
+- ✅ Security implemented
+- ✅ API documentation
+- ✅ Test coverage
+- ✅ Docker configuration
+- ✅ CI/CD ready
+
+Perfect for microservices, REST APIs, and enterprise applications.
 
 ---
-Plugin based on the [IntelliJ Platform Plugin Template][template].
 
-[template]: https://github.com/JetBrains/intellij-platform-plugin-template
-[docs:plugin-description]: https://plugins.jetbrains.com/docs/intellij/plugin-user-experience.html#plugin-description-and-presentation
+**Made with ❤️ for the Spring Boot community**
